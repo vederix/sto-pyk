@@ -3,19 +3,12 @@ import { useTheme } from '../context/ThemeContext';
 import { useApp } from '../context/AppContext';
 import {
   X,
-  User,
-  Wrench,
-  Clock,
-  CheckCircle2,
   Trash2,
   MapPin,
   FileText,
-  Navigation,
   Mail,
-  AlertTriangle,
   Database,
-  RefreshCw,
-  Phone
+  RefreshCw
 } from 'lucide-react';
 const getTaskTypeConfig = (jenisKerja) => {
   const jk = (jenisKerja || '').toLowerCase();

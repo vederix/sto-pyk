@@ -4,16 +4,10 @@ import {
   PieChart,
   BarChart3,
   TrendingUp,
-  Activity,
-  CheckCircle2,
-  Clock,
-  AlertCircle,
-  Package,
-  Layers,
-  ArrowUpRight
+  Activity
 } from 'lucide-react';
 
-export default function AnalyticsChartsPimpinan({ tugas = [], barang = [], permohonan = [] }) {
+export default function AnalyticsChartsPimpinan({ tugas = [], barang = [] }) {
   const { isDark } = useTheme();
   const [hoveredSlice, setHoveredSlice] = useState(null);
 

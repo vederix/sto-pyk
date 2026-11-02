@@ -7,11 +7,7 @@ import {
   Shield,
   Wrench,
   Package,
-  Phone,
   Mail,
-  BadgeCheck,
-  Lock,
-  Trash2,
   X
 } from 'lucide-react';
 

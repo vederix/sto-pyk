@@ -22,7 +22,6 @@ import {
   Search,
   CheckCircle2,
   Radio,
-  Barcode,
   Package,
   Eye
 } from 'lucide-react';

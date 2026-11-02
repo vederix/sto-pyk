@@ -7,10 +7,6 @@ import {
   PackageCheck,
   History,
   Barcode,
-  Trash2,
-  CheckCircle2,
-  ShieldCheck,
-  Radio,
   Boxes,
   Tag
 } from 'lucide-react';

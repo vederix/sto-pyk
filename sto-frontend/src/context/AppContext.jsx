@@ -111,37 +111,61 @@ export function AppProvider({ children }) {
     }, 4000);
   }, []);
 
-  // Sync to LocalStorage (local state fallback cache)
+  // Helper: Asynchronous Debounced LocalStorage Save (prevents UI freezing on low-end CPUs)
+  const debouncedStorageSave = useCallback((key, data, delay = 400) => {
+    if (typeof window === 'undefined') return;
+    const timerKey = `_sto_debounce_${key}`;
+    clearTimeout(window[timerKey]);
+    window[timerKey] = setTimeout(() => {
+      const persist = () => {
+        try {
+          localStorage.setItem(key, JSON.stringify(data));
+        } catch (err) {
+          console.warn(`[Storage Save] Gagal menyimpan ${key}:`, err);
+        }
+      };
+
+      if (typeof window.requestIdleCallback === 'function') {
+        window.requestIdleCallback(persist);
+      } else {
+        persist();
+      }
+    }, delay);
+  }, []);
+
+  // Sync to LocalStorage (local state fallback cache with non-blocking debounce)
   useEffect(() => {
-    localStorage.setItem('sto_currentUser', JSON.stringify(currentUser));
-    if (currentUser) localStorage.setItem('user', JSON.stringify(currentUser));
-  }, [currentUser]);
+    if (currentUser) {
+      debouncedStorageSave('sto_currentUser', currentUser, 100);
+      debouncedStorageSave('user', currentUser, 100);
+    }
+  }, [currentUser, debouncedStorageSave]);
 
   useEffect(() => {
-    localStorage.setItem('sto_users', JSON.stringify(users));
-  }, [users]);
+    debouncedStorageSave('sto_users', users, 500);
+  }, [users, debouncedStorageSave]);
 
   useEffect(() => {
-    localStorage.setItem('sto_barang', JSON.stringify(barang));
-  }, [barang]);
+    debouncedStorageSave('sto_barang', barang, 400);
+  }, [barang, debouncedStorageSave]);
 
   useEffect(() => {
-    localStorage.setItem('sto_tugas', JSON.stringify(tugas));
-  }, [tugas]);
+    debouncedStorageSave('sto_tugas', tugas, 400);
+  }, [tugas, debouncedStorageSave]);
 
   useEffect(() => {
-    localStorage.setItem('sto_permohonan', JSON.stringify(permohonan));
-  }, [permohonan]);
+    debouncedStorageSave('sto_permohonan', permohonan, 400);
+  }, [permohonan, debouncedStorageSave]);
 
   useEffect(() => {
-    localStorage.setItem('sto_detailPermohonan', JSON.stringify(detailPermohonan));
-  }, [detailPermohonan]);
+    debouncedStorageSave('sto_detailPermohonan', detailPermohonan, 400);
+  }, [detailPermohonan, debouncedStorageSave]);
 
   useEffect(() => { localStorage.removeItem('sto_trackingGps'); }, []);
 
   useEffect(() => {
-    localStorage.setItem('sto_odp', JSON.stringify(odp));
-  }, [odp]);
+    debouncedStorageSave('sto_odp', odp, 500);
+  }, [odp, debouncedStorageSave]);
 
   // Robust Fetch & Sync from Supabase with Local Fallback
   const fetchRealData = useCallback(async () => {
@@ -346,7 +370,7 @@ export function AppProvider({ children }) {
 
     setTugas(prev => [newTask, ...prev]);
 
-    // 1. Sync ke Express Backend API (Memicu Broadcast Bot Telegram @sto_pyk_bot ke Teknisi)
+    // 1. Sync ke Express Backend API
     try {
       const resApi = await api.post('/tugas', {
         pimpinan_id: Number(newTask.pimpinan_id) || 1,
@@ -531,7 +555,7 @@ export function AppProvider({ children }) {
       return t;
     }));
 
-    // 1. Sync ke Express Backend API (AGAR MENTRIGGER NOTIFIKASI TELEGRAM KE GRUP GUDANG!)
+    // 1. Sync ke Express Backend API
     try {
       await api.post('/permohonan', {
         tugas_id: parsedTugasId,

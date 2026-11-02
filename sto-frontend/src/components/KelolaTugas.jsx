@@ -5,15 +5,9 @@ import {
   ClipboardList,
   PlusCircle,
   Search,
-  Filter,
   Edit2,
   Trash2,
-  CheckCircle2,
-  Clock,
-  AlertCircle,
   FileText,
-  UserCheck,
-  User,
   X
 } from 'lucide-react';
 import ModalDetailRiwayatTeknisi from './ModalDetailRiwayatTeknisi';
@@ -24,8 +18,7 @@ export default function KelolaTugas({ onOpenCreateModal, onOpenBastp }) {
     tugas = [],
     users = [],
     updateTugas,
-    deleteTugas,
-    showToast
+    deleteTugas
   } = useApp();
 
   const [searchQuery, setSearchQuery] = useState('');

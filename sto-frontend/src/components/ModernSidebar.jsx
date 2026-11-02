@@ -34,7 +34,7 @@ export default function ModernSidebar({ activeTab, onTabChange }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const { isDark, toggleTheme } = useTheme();
-  const { currentUser, logout, permohonan, tugas, barang } = useApp();
+  const { currentUser, logout, permohonan, tugas, barang = [] } = useApp();
   const navigate = useNavigate();
 
   const currentRole = currentUser?.role || 'pimpinan';
@@ -43,7 +43,6 @@ export default function ModernSidebar({ activeTab, onTabChange }) {
   const pendingApprovalCount = permohonan.filter(p => p.status === 'Pending').length;
   const approvedForReleaseCount = permohonan.filter(p => p.status === 'Approved').length;
   const assignedTechTickets = tugas.filter(t => t.teknisi_id === currentUser?.id && t.status !== 'Done').length;
-  const lowStockCount = barang.filter(b => b.stok <= 20).length;
 
   // Menu items configured strictly per user requirements
   const getRoleMenus = () => {

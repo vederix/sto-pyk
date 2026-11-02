@@ -1,5 +1,5 @@
 import React from 'react';
-import { Printer, X, FileText, CheckCircle2 } from 'lucide-react';
+import { Printer, X, FileText } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
 export default function CetakSuratPermintaan({ task, items = [], onClose }) {

@@ -15,6 +15,7 @@
 
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { useApp } from '../context/AppContext';
 import {
   Layers,
@@ -22,10 +23,6 @@ import {
   MapPin,
   Plus,
   Filter,
-  Radio,
-  Search,
-  Zap,
-  Info,
   X,
   Edit2,
   Trash2,
@@ -185,9 +182,7 @@ function getOdpWilayah(point) {
 export default function WebGISMap({
   selectedOdpId = null,
   onSelectOdp = () => {},
-  selectedTugasId = null,
-  onSelectTugas = () => {},
-  onOpenAddOdp = null
+  onSelectTugas = () => {}
 }) {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
@@ -311,7 +306,11 @@ export default function WebGISMap({
       center: [STO_COORDINATES.lat, STO_COORDINATES.lng],
       zoom: 14,
       zoomControl: false,
-      attributionControl: false
+      attributionControl: false,
+      preferCanvas: true, // Hardware-accelerated GPU canvas rendering for markers
+      updateWhenIdle: true, // Render tiles/markers only after pan/zoom ends (saves CPU)
+      fadeAnimation: false, // Turn off heavy DOM opacity transitions on mobile
+      markerZoomAnimation: false
     });
 
     applyTileLayer(map, initialLayer);

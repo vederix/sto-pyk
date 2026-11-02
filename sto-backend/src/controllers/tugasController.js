@@ -3,9 +3,9 @@ const { successResponse, errorResponse } = require('../utils/responseHelper');
 const telegramService = require('../services/telegramService');
 const odpController = require('./odpController');
 
-// 1. Ambil semua tugas (dukung filter status)
+// 1. Ambil semua tugas (dukung filter status, paginasi & limit payload)
 exports.getAllTugas = async (req, res) => {
-  const { status, teknisi_id } = req.query;
+  const { status, teknisi_id, page, limit } = req.query;
 
   let query = supabase
     .from('tugas')
@@ -13,7 +13,7 @@ exports.getAllTugas = async (req, res) => {
       *,
       pimpinan:pimpinan_id ( id, nama_lengkap, email ),
       teknisi:teknisi_id ( id, nama_lengkap, email )
-    `)
+    `, { count: 'exact' })
     .order('id', { ascending: false });
 
   if (status) {
@@ -24,13 +24,25 @@ exports.getAllTugas = async (req, res) => {
     query = query.eq('teknisi_id', parseInt(teknisi_id, 10));
   }
 
-  const { data, error } = await query;
+  // Dukungan pagination jika diberikan parameter page & limit (misal: page=1&limit=30)
+  if (limit) {
+    const pageNum = Math.max(1, parseInt(page, 10) || 1);
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10)));
+    const from = (pageNum - 1) * limitNum;
+    const to = from + limitNum - 1;
+    query = query.range(from, to);
+  }
+
+  const { data, error, count } = await query;
 
   if (error) {
     return errorResponse(res, 500, 'Gagal mengambil data tiket tugas', error.message);
   }
 
-  return successResponse(res, 200, 'Daftar tiket tugas berhasil diambil', data, { tugas: data });
+  return successResponse(res, 200, 'Daftar tiket tugas berhasil diambil', data, {
+    tugas: data,
+    total: count !== null ? count : data.length
+  });
 };
 
 // 2. Pimpinan membuat tugas baru untuk teknisi (Sekali Klik Dual Broadcast: Supabase & Telegram)

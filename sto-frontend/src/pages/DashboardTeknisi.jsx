@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ModernSidebar from '../components/ModernSidebar';
 import RequestBarangModal from '../components/RequestBarangModal';
@@ -12,8 +12,6 @@ import {
   MapPin,
   Package,
   Camera,
-  Navigation,
-  Radio,
   Clock,
   Phone,
   CheckCircle2,
@@ -81,26 +79,24 @@ export default function DashboardTeknisi() {
   const [uploadTugasId, setUploadTugasId] = useState(null);
   const [bastpModalTask, setBastpModalTask] = useState(null);
   
-  // Filter daftar tugas:
-  // 1. Tiket terbuka yang disiarkan Pimpinan (belum diambil teknisi mana pun)
-  const openTasks = tugas.filter(t => !t.teknisi_id && (t.status === 'Open' || !t.status));
+  // Memoized filter tugas agar tidak di-recompute pada setiap re-render di HP teknisi
+  const { openTasks, myActiveTasks, myDoneTasks, activeTasks } = useMemo(() => {
+    const open = (tugas || []).filter(t => !t.teknisi_id && (t.status === 'Open' || !t.status));
+    const mine = (tugas || []).filter(t => Number(t.teknisi_id) === Number(user?.id));
+    const active = mine.filter(t => t.status !== 'Done');
+    const done = mine.filter(t => t.status === 'Done');
+    const primaryActive = active.length > 0 ? active : (mine.length > 0 ? mine : []);
+    return { openTasks: open, myActiveTasks: active, myDoneTasks: done, activeTasks: primaryActive };
+  }, [tugas, user?.id]);
 
-  // 2. Tiket yang diambil oleh teknisi ini
-  const myTasks = tugas.filter(t => t.teknisi_id === user.id);
-  const myActiveTasks = myTasks.filter(t => t.status !== 'Done');
-  const myDoneTasks = myTasks.filter(t => t.status === 'Done');
-
-  // Tiket aktif untuk navigasi pengerjaan
-  const activeTasks = myActiveTasks.length > 0 ? myActiveTasks : (myTasks.length > 0 ? myTasks : []);
-
-  // Permohonan material yang diajukan oleh teknisi ini
-  const myRequests = permohonan.filter(p => {
-    const parent = tugas.find(t => t.id === p.tugas_id);
-    return parent?.teknisi_id === user.id;
-  });
-
-    const activeTasksRef = useRef(activeTasks);
-  activeTasksRef.current = activeTasks;
+  // Memoized filter permohonan teknisi (menggunakan O(1) Map Lookup alih-alih nested find)
+  const myRequests = useMemo(() => {
+    const taskMap = new Map((tugas || []).map(t => [t.id, t]));
+    return (permohonan || []).filter(p => {
+      const parent = taskMap.get(p.tugas_id);
+      return Number(parent?.teknisi_id) === Number(user?.id);
+    });
+  }, [permohonan, tugas, user?.id]);
 
   // Proteksi hak akses sesi teknisi
   useEffect(() => {

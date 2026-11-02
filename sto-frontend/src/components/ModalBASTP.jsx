@@ -20,10 +20,7 @@ import {
   X,
   CheckCircle2,
   Radio,
-  Barcode,
-  Calendar,
   User,
-  MapPin,
   ShieldCheck,
   Package
 } from 'lucide-react';

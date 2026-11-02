@@ -88,8 +88,8 @@ function FormTugas() {
         id: apiData?.id
       });
 
-      setPesan(`Tiket #${createdTask.id} berhasil disiarkan ke Grup Telegram! Siapapun teknisi di grup dapat langsung menekan tombol Ambil Tiket.`);
-      showToast('Tiket Berhasil Disimpan & Disiarkan ke Grup Telegram!', 'success');
+      setPesan(`Tiket #${createdTask.id} berhasil diterbitkan dan siap diklaim oleh teknisi lapangan.`);
+      showToast('Tiket Berhasil Disimpan & Diterbitkan!', 'success');
 
       // Reset form ringan
       setPelangganNama('');
@@ -118,7 +118,7 @@ function FormTugas() {
               </span>
             </h1>
             <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-              Pimpinan menerbitkan penugasan baru. Tiket otomatis disiarkan ke grup Telegram agar teknisi yang siaga dapat langsung mengklaim pekerjaan.
+              Pimpinan menerbitkan penugasan baru. Tiket otomatis masuk ke pool siaga agar teknisi lapangan dapat langsung mengklaim pekerjaan.
             </p>
           </div>
         </div>

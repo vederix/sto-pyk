@@ -21,12 +21,12 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { useTheme } from '../context/ThemeContext';
+import { compressImage } from '../utils/imageCompressor';
 import {
   Camera,
   Upload,
   X,
   CheckCircle2,
-  AlertTriangle,
   Barcode,
   Wrench,
   Radio,
@@ -60,7 +60,6 @@ export default function UploadBuktiModal({ tugasId, onClose, onSuccess }) {
 
   // 2. STATE FOTO DOKUMENTASI
   const [preview, setPreview] = useState(CONTOH_FOTO_LAPANGAN[0].url);
-  const [file, setFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [activeStep, setActiveStep] = useState(1); // Step 1: Teknis & SN, Step 2: Rekonsiliasi Material, Step 3: Foto & Selesai
 
@@ -148,16 +147,38 @@ export default function UploadBuktiModal({ tugasId, onClose, onSuccess }) {
     }));
   };
 
-  // Handler upload file lokal
-  const handleFileChange = (e) => {
+  // Garbage Collection cleanup: Lepas alokasi Blob Object URL lama dari memori browser
+  useEffect(() => {
+    return () => {
+      if (preview && typeof preview === 'string' && preview.startsWith('blob:')) {
+        URL.revokeObjectURL(preview);
+      }
+    };
+  }, [preview]);
+
+  // Handler upload file lokal dengan kompresi client-side otomatis & memory cleanup
+  const handleFileChange = async (e) => {
     const selected = e.target.files[0];
     if (!selected) return;
     if (!selected.type.startsWith('image/')) {
       showToast('File harus berupa gambar foto', 'error');
       return;
     }
-    setFile(selected);
-    setPreview(URL.createObjectURL(selected));
+
+    // Bebaskan URL blob sebelumnya dari RAM browser jika ada
+    if (preview && typeof preview === 'string' && preview.startsWith('blob:')) {
+      URL.revokeObjectURL(preview);
+    }
+
+    try {
+      // Kompres otomatis gambar kamera HP teknisi
+      const compressed = await compressImage(selected, { maxWidth: 1280, maxHeight: 1280, quality: 0.82 });
+      setFile(compressed);
+      setPreview(URL.createObjectURL(compressed));
+    } catch {
+      setFile(selected);
+      setPreview(URL.createObjectURL(selected));
+    }
   };
 
   // Validasi kualitas redaman optik (Standar Telkom Regional: -16.0 s/d -24.0 dBm)

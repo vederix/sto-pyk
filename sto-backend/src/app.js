@@ -1,21 +1,3 @@
-/**
- * ============================================================================
- * KONFIGURASI APLIKASI EXPRESS (sto-backend/src/app.js)
- * ============================================================================
- * Penjelasan Teknis Operasional:
- * File ini mengatur alur request HTTP, middleware keamanan/CORS, dan rute-rute API.
- * 
- * DAFTAR ENDPOINT API:
- * 1. GET  /                   -> Cek kesehatan server (Health Check)
- * 2. /api/auth                -> Login & Pendaftaran akun teknisi
- * 3. /api/tugas               -> Manajemen tiket tugas (buat tugas, klaim, selesai)
- * 4. /api/barang              -> Inventaris gudang (stok masuk, keluar, edit, hapus)
- * 5. /api/permohonan          -> Permohonan material teknisi & approval pimpinan
- * 6. /api/tracking            -> Pelacakan koordinat GPS teknisi real-time
- * 7. /api/laporan             -> Laporan rekapitulasi audit pekerjaan
- * ============================================================================
- */
-
 const express = require('express');
 const cors = require('cors');
 
@@ -26,7 +8,6 @@ const permohonanRoutes = require('./routes/permohonanRoutes');
 const laporanRoutes = require('./routes/laporanRoutes');
 const barangRoutes = require('./routes/barangRoutes');
 const odpRoutes = require('./routes/odpRoutes');
-const telegramRoutes = require('./routes/telegramRoutes');
 
 // Inisialisasi aplikasi Express
 const app = express();
@@ -52,7 +33,6 @@ app.use('/api/tugas', tugasRoutes);             // Tiket pekerjaan lapangan
 app.use('/api/barang', barangRoutes);           // Inventaris & stok gudang
 app.use('/api/permohonan', permohonanRoutes);   // Permohonan material ke gudang
 app.use('/api/odp', odpRoutes);                 // Pemetaan Titik ODP / Jaringan FO
-app.use('/api/telegram', telegramRoutes);       // Integrasi Bot Telegram @sto_pyk_bot
 app.use('/api/laporan', laporanRoutes);         // Berita acara & audit laporan
 
 // Mengekspor objek app agar bisa dijalankan oleh server.js

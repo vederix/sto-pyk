@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ModernSidebar from '../components/ModernSidebar';
 import InputBarangGudang from '../components/InputBarangGudang';
@@ -15,14 +15,10 @@ import {
   Send,
   Boxes,
   ClipboardCheck,
-  FileText,
   Eye,
   ShieldCheck,
   Barcode,
-  Radio,
-  Package,
   PlusCircle,
-  Plus,
   PieChart,
   BarChart3,
   Download,
@@ -42,8 +38,6 @@ export default function GudangDashboard() {
     users,
     releaseMaterial,
     updateBarang,
-    tambahStokBarang,
-    deleteBarang,
     showToast
   } = useApp();
 
@@ -74,55 +68,72 @@ export default function GudangDashboard() {
     }
   }, [navigate]);
 
-  // Approved Permohonan awaiting release from warehouse (SOP 4)
-  const approvedRequests = permohonan.filter(p => p.status === 'Approved').map(p => {
-    const parentTask = tugas.find(t => t.id === p.tugas_id);
-    const tech = users.find(u => u.id === parentTask?.teknisi_id);
-    const details = detailPermohonan.filter(d => d.permohonan_id === p.id).map(d => {
-      const item = barang.find(b => b.id === d.barang_id);
+  // Lookup maps with O(1) performance for fast multi-table joins
+  const { taskMap, userMap, itemMap } = useMemo(() => {
+    const tMap = new Map((tugas || []).map(t => [t.id, t]));
+    const uMap = new Map((users || []).map(u => [u.id, u]));
+    const bMap = new Map((barang || []).map(b => [b.id, b]));
+    return { taskMap: tMap, userMap: uMap, itemMap: bMap };
+  }, [tugas, users, barang]);
+
+  // Approved Permohonan awaiting release from warehouse (Memoized with O(1) Lookups)
+  const approvedRequests = useMemo(() => {
+    return (permohonan || []).filter(p => p.status === 'Approved').map(p => {
+      const parentTask = taskMap.get(p.tugas_id);
+      const tech = userMap.get(parentTask?.teknisi_id);
+      const details = (detailPermohonan || []).filter(d => d.permohonan_id === p.id).map(d => {
+        const item = itemMap.get(d.barang_id);
+        return {
+          ...d,
+          item,
+          isStockEnough: item ? item.stok >= d.jumlah_minta : false
+        };
+      });
+
+      const canRelease = details.every(d => d.isStockEnough);
+
       return {
-        ...d,
-        item,
-        isStockEnough: item ? item.stok >= d.jumlah_minta : false
+        ...p,
+        parentTask,
+        tech,
+        details,
+        canRelease
       };
     });
+  }, [permohonan, detailPermohonan, taskMap, userMap, itemMap]);
 
-    const canRelease = details.every(d => d.isStockEnough);
+  // Released history (Memoized with O(1) Lookups)
+  const releasedRequests = useMemo(() => {
+    return (permohonan || []).filter(p => p.status === 'Released').map(p => {
+      const parentTask = taskMap.get(p.tugas_id);
+      const tech = userMap.get(parentTask?.teknisi_id);
+      const details = (detailPermohonan || []).filter(d => d.permohonan_id === p.id).map(d => {
+        const item = itemMap.get(d.barang_id);
+        return { ...d, item };
+      });
 
-    return {
-      ...p,
-      parentTask,
-      tech,
-      details,
-      canRelease
-    };
-  });
-
-  // Released history
-  const releasedRequests = permohonan.filter(p => p.status === 'Released').map(p => {
-    const parentTask = tugas.find(t => t.id === p.tugas_id);
-    const tech = users.find(u => u.id === parentTask?.teknisi_id);
-    const details = detailPermohonan.filter(d => d.permohonan_id === p.id).map(d => {
-      const item = barang.find(b => b.id === d.barang_id);
-      return { ...d, item };
+      return { ...p, parentTask, tech, details };
     });
+  }, [permohonan, detailPermohonan, taskMap, userMap, itemMap]);
 
-    return { ...p, parentTask, tech, details };
-  });
+  // KPI calculations (Memoized)
+  const { totalItemCount, lowStockItems, pendingReleaseCount, totalReleasedCount } = useMemo(() => ({
+    totalItemCount: (barang || []).length,
+    lowStockItems: (barang || []).filter(b => b.stok <= 20).length,
+    pendingReleaseCount: approvedRequests.length,
+    totalReleasedCount: releasedRequests.length
+  }), [barang, approvedRequests.length, releasedRequests.length]);
 
-  // KPI calculations
-  const totalItemCount = barang.length;
-  const lowStockItems = barang.filter(b => b.stok <= 20).length;
-  const pendingReleaseCount = approvedRequests.length;
-  const totalReleasedCount = releasedRequests.length;
-
-  // Filtered inventory
-  const filteredBarang = barang.filter(b => {
-    const matchQuery = b.nama_barang.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                       b.kode?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchCat = categoryFilter === 'all' || b.kategori === categoryFilter;
-    return matchQuery && matchCat;
-  });
+  // Filtered inventory (Memoized so typing search does not cause slow recalculations)
+  const filteredBarang = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    return (barang || []).filter(b => {
+      const matchQuery = !q || (b.nama_barang && b.nama_barang.toLowerCase().includes(q)) ||
+                         (b.kode && b.kode.toLowerCase().includes(q));
+      const matchCat = categoryFilter === 'all' || b.kategori === categoryFilter;
+      return matchQuery && matchCat;
+    });
+  }, [barang, searchQuery, categoryFilter]);
 
   const categories = [
     'all',
@@ -267,15 +278,7 @@ export default function GudangDashboard() {
   }, [ontInventoryList, ontSearchQuery, ontStatusFilter]);
 
 
-  // Statistik Kategori Material untuk Donut Chart
-  const categoryStats = React.useMemo(() => {
-    const counts = {};
-    barang.forEach(b => {
-      const cat = b.kategori || 'Aksesoris';
-      counts[cat] = (counts[cat] || 0) + Number(b.stok);
-    });
-    return counts;
-  }, [barang]);
+
 
   const stockHealthStats = React.useMemo(() => {
     let aman = 0;

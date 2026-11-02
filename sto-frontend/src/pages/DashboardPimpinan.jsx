@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ModernSidebar from '../components/ModernSidebar';
 import FormTugas from '../components/FormTugas';
@@ -24,9 +24,7 @@ import {
   ArrowRight,
   FileText,
   User,
-  Users,
-  Wrench,
-  Phone
+  Users
 } from 'lucide-react';
 
 // Helper badge konfigurasi jenis penugasan teknisi
@@ -88,19 +86,26 @@ function DashboardPimpinan() {
     }
   }, [navigate]);
 
-  // Daftar teknisi lapangan
-  const fieldTechnicians = users.filter(u => u.role === 'teknisi');
+  // Memoized daftar teknisi & perhitungan KPI agregat
+  const { fieldTechnicians, totalTasks, progressTasks, doneTasks, pendingRequests, totalBarangCount, lowStockCount, activeTechCount } = useMemo(() => {
+    const techs = (users || []).filter(u => u.role === 'teknisi');
+    const activeTechIdSet = new Set(
+      (tugas || [])
+        .filter(t => t.teknisi_id && t.status !== 'Done')
+        .map(t => Number(t.teknisi_id))
+    );
 
-  // KPI Calculations
-  const totalTasks = tugas.length;
-  const progressTasks = tugas.filter(t => t.status === 'Progress').length;
-  const doneTasks = tugas.filter(t => t.status === 'Done').length;
-  const pendingRequests = permohonan.filter(p => p.status === 'Pending').length;
-  const totalBarangCount = barang.length;
-  const lowStockCount = barang.filter(b => b.stok <= 20).length;
-  const activeTechCount = fieldTechnicians.filter(tech =>
-    tugas.some(t => Number(t.teknisi_id) === Number(tech.id) && t.status !== 'Done')
-  ).length;
+    return {
+      fieldTechnicians: techs,
+      totalTasks: (tugas || []).length,
+      progressTasks: (tugas || []).filter(t => t.status === 'Progress').length,
+      doneTasks: (tugas || []).filter(t => t.status === 'Done').length,
+      pendingRequests: (permohonan || []).filter(p => p.status === 'Pending').length,
+      totalBarangCount: (barang || []).length,
+      lowStockCount: (barang || []).filter(b => b.stok <= 20).length,
+      activeTechCount: techs.filter(tech => activeTechIdSet.has(Number(tech.id))).length
+    };
+  }, [users, tugas, permohonan, barang]);
 
   return (
     <div className={`min-h-screen flex flex-col lg:flex-row ${
