@@ -1,0 +1,11 @@
+# Konfigurasi Build & Deploy Netlify untuk Monorepo STO Telkom Akses
+[build]
+  base = "sto-frontend"
+  command = "npm run build"
+  publish = "dist"
+
+# Redirect semua rute client-side (SPA React Router) ke index.html
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
