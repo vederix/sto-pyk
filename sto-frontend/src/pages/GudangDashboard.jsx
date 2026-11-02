@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import ModernSidebar from '../components/ModernSidebar';
 import InputBarangGudang from '../components/InputBarangGudang';
 import CetakSuratJalan from '../components/CetakSuratJalan';
@@ -27,8 +27,10 @@ import {
   Check
 } from 'lucide-react';
 
-export default function GudangDashboard() {
+export default function GudangDashboard({ defaultTab }) {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const urlTab = searchParams.get('tab');
   const { isDark } = useTheme();
   const {
     barang,
@@ -43,7 +45,9 @@ export default function GudangDashboard() {
 
   const user = JSON.parse(localStorage.getItem('user')) || { id: 4, nama_lengkap: 'Siti Rahmawati', role: 'gudang' };
 
-  const [activeMenu, setActiveMenu] = useState('daftar-barang'); // 'daftar-barang' | 'output-barang' | 'input-barang' | 'cetak-surat-jalan'
+  const [activeMenu, setActiveMenu] = useState(() => {
+    return defaultTab || urlTab || sessionStorage.getItem('sto_gudang_tab') || 'daftar-barang';
+  });
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [ontSearchQuery, setOntSearchQuery] = useState('');
@@ -62,12 +66,37 @@ export default function GudangDashboard() {
     kode: ''
   });
 
-  const userRole = user?.role;
+  // Sync activeMenu with URL query params and sessionStorage
   useEffect(() => {
-    if (!userRole || userRole !== 'gudang') {
-      navigate('/');
+    if (defaultTab) {
+      setActiveMenu(defaultTab);
+      sessionStorage.setItem('sto_gudang_tab', defaultTab);
+    } else if (urlTab && urlTab !== activeMenu) {
+      setActiveMenu(urlTab);
+      sessionStorage.setItem('sto_gudang_tab', urlTab);
     }
-  }, [navigate, userRole]);
+  }, [urlTab, defaultTab]);
+
+  const handleTabChange = (newTab) => {
+    setActiveMenu(newTab);
+    sessionStorage.setItem('sto_gudang_tab', newTab);
+    setSearchParams({ tab: newTab }, { replace: true });
+  };
+
+  // Graceful role protection
+  useEffect(() => {
+    try {
+      const rawUser = localStorage.getItem('user');
+      if (rawUser) {
+        const u = JSON.parse(rawUser);
+        if (u && u.role !== 'gudang') {
+          navigate(u.role === 'pimpinan' ? '/dashboard-pimpinan' : '/dashboard-teknisi', { replace: true });
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }, [navigate]);
 
   // Lookup maps with O(1) performance for fast multi-table joins
   const { taskMap, userMap, itemMap } = useMemo(() => {
@@ -346,7 +375,7 @@ export default function GudangDashboard() {
     } transition-colors duration-300`}>
       
       {/* Left Sidebar Layout */}
-      <ModernSidebar activeTab={activeMenu} onTabChange={setActiveMenu} />
+      <ModernSidebar activeTab={activeMenu} onTabChange={handleTabChange} />
 
       {/* Main Content Area */}
       <main className="flex-1 min-w-0 flex flex-col lg:pl-72 transition-all duration-300">

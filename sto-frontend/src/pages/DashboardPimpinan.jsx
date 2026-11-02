@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import ModernSidebar from '../components/ModernSidebar';
 import FormTugas from '../components/FormTugas';
 import ApprovalMaterial from '../components/ApprovalMaterial';
@@ -58,8 +58,13 @@ const getTaskTypeConfig = (jenisKerja) => {
   };
 };
 
-function DashboardPimpinan() {
-  const [activeMenu, setActiveMenu] = useState('dashboard');
+function DashboardPimpinan({ defaultTab }) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const urlTab = searchParams.get('tab');
+
+  const [activeMenu, setActiveMenu] = useState(() => {
+    return defaultTab || urlTab || sessionStorage.getItem('sto_pimpinan_tab') || 'dashboard';
+  });
   const [showCreateTaskModal, setShowCreateTaskModal] = useState(false);
   const [bastpModalTask, setBastpModalTask] = useState(null);
   const [selectedTrackingTaskId, setSelectedTrackingTaskId] = useState(null);
@@ -74,15 +79,35 @@ function DashboardPimpinan() {
     users = []
   } = useApp();
 
-  // Proteksi sesi pimpinan
+  // Sync activeMenu with URL query params and sessionStorage
+  useEffect(() => {
+    if (defaultTab) {
+      setActiveMenu(defaultTab);
+      sessionStorage.setItem('sto_pimpinan_tab', defaultTab);
+    } else if (urlTab && urlTab !== activeMenu) {
+      setActiveMenu(urlTab);
+      sessionStorage.setItem('sto_pimpinan_tab', urlTab);
+    }
+  }, [urlTab, defaultTab]);
+
+  const handleTabChange = (newTab) => {
+    setActiveMenu(newTab);
+    sessionStorage.setItem('sto_pimpinan_tab', newTab);
+    setSearchParams({ tab: newTab }, { replace: true });
+  };
+
+  // Proteksi sesi pimpinan (graceful fallback)
   useEffect(() => {
     try {
-      const user = JSON.parse(localStorage.getItem('user'));
-      if (!user || user.role !== 'pimpinan') {
-        navigate('/');
+      const rawUser = localStorage.getItem('user');
+      if (rawUser) {
+        const user = JSON.parse(rawUser);
+        if (user && user.role !== 'pimpinan') {
+          navigate(user.role === 'teknisi' ? '/dashboard-teknisi' : '/dashboard-gudang', { replace: true });
+        }
       }
     } catch {
-      navigate('/');
+      // ignore
     }
   }, [navigate]);
 
@@ -113,7 +138,7 @@ function DashboardPimpinan() {
     } transition-colors duration-300`}>
       
       {/* Left Sidebar Layout */}
-      <ModernSidebar activeTab={activeMenu} onTabChange={setActiveMenu} />
+      <ModernSidebar activeTab={activeMenu} onTabChange={handleTabChange} />
 
       {/* Main Content Area beside Sidebar */}
       <main className="flex-1 min-w-0 flex flex-col lg:pl-72 transition-all duration-300">

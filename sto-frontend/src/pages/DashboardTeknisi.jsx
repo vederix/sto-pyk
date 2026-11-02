@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import ModernSidebar from '../components/ModernSidebar';
 import RequestBarangModal from '../components/RequestBarangModal';
 import UploadBuktiModal from '../components/UploadBuktiModal';
@@ -34,8 +34,10 @@ import {
  * 6. Closing pekerjaan: validasi ODP, redaman dBm, SN ONT, rekonsiliasi material & cetak BASTP.
  * ============================================================================
  */
-export default function DashboardTeknisi() {
+export default function DashboardTeknisi({ defaultTab }) {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const urlTab = searchParams.get('tab');
   const { isDark } = useTheme();
   const {
     tugas,
@@ -74,10 +76,29 @@ export default function DashboardTeknisi() {
   // Sesi akun teknisi aktif
   const user = JSON.parse(localStorage.getItem('user')) || { id: 2, nama_lengkap: 'Ahmad Fadli', role: 'teknisi' };
 
-  const [activeMenu, setActiveMenu] = useState('tiket');
+  const [activeMenu, setActiveMenu] = useState(() => {
+    return defaultTab || urlTab || sessionStorage.getItem('sto_teknisi_tab') || 'tiket';
+  });
   const [modalTugasId, setModalTugasId] = useState(null);
   const [uploadTugasId, setUploadTugasId] = useState(null);
   const [bastpModalTask, setBastpModalTask] = useState(null);
+
+  // Sync activeMenu with URL query params and sessionStorage
+  useEffect(() => {
+    if (defaultTab) {
+      setActiveMenu(defaultTab);
+      sessionStorage.setItem('sto_teknisi_tab', defaultTab);
+    } else if (urlTab && urlTab !== activeMenu) {
+      setActiveMenu(urlTab);
+      sessionStorage.setItem('sto_teknisi_tab', urlTab);
+    }
+  }, [urlTab, defaultTab]);
+
+  const handleTabChange = (newTab) => {
+    setActiveMenu(newTab);
+    sessionStorage.setItem('sto_teknisi_tab', newTab);
+    setSearchParams({ tab: newTab }, { replace: true });
+  };
   
   // Memoized filter tugas agar tidak di-recompute pada setiap re-render di HP teknisi
   const { openTasks, myActiveTasks, myDoneTasks, activeTasks } = useMemo(() => {
@@ -105,14 +126,19 @@ export default function DashboardTeknisi() {
   }, [permohonan, tugas, user?.id]);
 
   // Proteksi hak akses sesi teknisi
-  const userRole = user?.role;
   useEffect(() => {
-    if (!userRole || userRole !== 'teknisi') {
-      navigate('/');
+    try {
+      const rawUser = localStorage.getItem('user');
+      if (rawUser) {
+        const u = JSON.parse(rawUser);
+        if (u && u.role !== 'teknisi') {
+          navigate(u.role === 'pimpinan' ? '/dashboard-pimpinan' : '/dashboard-gudang', { replace: true });
+        }
+      }
+    } catch {
+      // ignore
     }
-  }, [navigate, userRole]);
-
-
+  }, [navigate]);
 
   return (
     <div className={`min-h-screen flex flex-col lg:flex-row ${
@@ -120,7 +146,7 @@ export default function DashboardTeknisi() {
     } transition-colors duration-300`}>
       
       {/* Left Sidebar Layout */}
-      <ModernSidebar activeTab={activeMenu} onTabChange={setActiveMenu} />
+      <ModernSidebar activeTab={activeMenu} onTabChange={handleTabChange} />
 
       {/* Main Content Area */}
       <main className="flex-1 min-w-0 flex flex-col lg:pl-72 transition-all duration-300">

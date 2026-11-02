@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import supabase, { isSupabaseConfigured } from '../api/supabaseClient';
 import api from '../api/axiosInstance';
@@ -39,6 +39,34 @@ export default function Login() {
   const { toggleTheme, isDark } = useTheme();
   const { users, setCurrentUser, addUser, showToast } = useApp();
   const navigate = useNavigate();
+
+  // If user is already authenticated, preserve session and avoid login flicker
+  useEffect(() => {
+    try {
+      const rawUser = localStorage.getItem('user');
+      if (rawUser) {
+        const savedUser = JSON.parse(rawUser);
+        if (savedUser && savedUser.role) {
+          const redirectPath = sessionStorage.getItem('sto_redirect_after_login');
+          if (redirectPath) {
+            sessionStorage.removeItem('sto_redirect_after_login');
+            navigate(redirectPath, { replace: true });
+            return;
+          }
+
+          if (savedUser.role === 'pimpinan') {
+            navigate('/dashboard-pimpinan', { replace: true });
+          } else if (savedUser.role === 'teknisi') {
+            navigate('/dashboard-teknisi', { replace: true });
+          } else if (savedUser.role === 'gudang') {
+            navigate('/dashboard-gudang', { replace: true });
+          }
+        }
+      }
+    } catch (e) {
+      // ignore parsing error
+    }
+  }, [navigate]);
 
   // Handle Automatic Role-Based Login
   const handleLogin = async (e) => {
@@ -131,7 +159,12 @@ export default function Login() {
 
       showToast(`Selamat datang, ${loggedInUser.nama_lengkap}! Masuk sebagai ${loggedInUser.role.toUpperCase()}`, 'success');
 
-
+      const redirectPath = sessionStorage.getItem('sto_redirect_after_login');
+      if (redirectPath) {
+        sessionStorage.removeItem('sto_redirect_after_login');
+        navigate(redirectPath, { replace: true });
+        return;
+      }
 
       if (loggedInUser.role === 'pimpinan') {
         navigate('/dashboard-pimpinan');

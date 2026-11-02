@@ -11,7 +11,10 @@ import {
   Wrench
 } from 'lucide-react';
 
+import { useNavigate } from 'react-router-dom';
+
 export default function AuditReportPage() {
+  const navigate = useNavigate();
   const { isDark } = useTheme();
   const {
     tugas,
@@ -82,7 +85,10 @@ export default function AuditReportPage() {
     <div className={`min-h-screen flex flex-col lg:flex-row ${isDark ? 'bg-[#0a0f1d] text-slate-100' : 'bg-slate-50 text-slate-800'} transition-colors duration-300`}>
       {/* Left Sidebar */}
       <div className="no-print">
-        <ModernSidebar activeTab="laporan-kerja" />
+        <ModernSidebar
+          activeTab="laporan-kerja"
+          onTabChange={(tab) => navigate(`/dashboard-pimpinan?tab=${tab}`)}
+        />
       </div>
 
       <main className="flex-1 min-w-0 lg:pl-72 transition-all duration-300">
