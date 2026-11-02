@@ -36,6 +36,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import supabase, { isSupabaseConfigured } from '../api/supabaseClient';
 import api from '../api/axiosInstance';
+import { broadcastTicketToTelegram } from '../services/telegramBroadcast';
 import {
   initialUsers,
   initialBarang,
@@ -420,7 +421,20 @@ export function AppProvider({ children }) {
           }
 
           if (data && data.length > 0) {
-            setTugas(prev => prev.map(t => t.id === assignedId ? { ...t, id: data[0].id } : t));
+            const savedRow = data[0];
+            setTugas(prev => prev.map(t => t.id === assignedId ? { ...t, id: savedRow.id } : t));
+
+            // Siarkan langsung ke Telegram dari browser (garansi broadcast selalu tersiar di Netlify)
+            broadcastTicketToTelegram({
+              ...newTask,
+              id: savedRow.id,
+              lokasi: fullLokasi,
+              odp_kode: taskData.odp_kode || (taskData.odp_id ? `ODP-ID-${taskData.odp_id}` : 'ODP-PYK-01/04')
+            }).then(tgRes => {
+              if (tgRes?.result?.message_id) {
+                supabase.from('tugas').update({ telegram_message_id: String(tgRes.result.message_id) }).eq('id', savedRow.id);
+              }
+            });
           }
         } catch (err) {
           console.warn('Supabase create task notice:', err);

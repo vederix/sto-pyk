@@ -11,10 +11,12 @@ const telegramService = require('./telegramService');
  * 3. Mengirimkan popup konfirmasi (answerCallbackQuery) ke layar Telegram teknisi.
  * 4. Mengumumkan ke grup bahwa tiket telah resmi diambil dan menginstruksikan teknisi ke Gudang STO.
  * 5. Menanggapi perintah bot seperti /start, /test, /status.
+ * 6. Auto-sync broadcast: otomatis mendeteksi tiket baru di Supabase yang belum tersiar ke Telegram dan menyiarkannya.
  */
 
 let isRunning = false;
 let pollingOffset = 0;
+let syncIntervalTimer = null;
 
 function sendTelegramApi(endpoint, payload) {
   return new Promise((resolve) => {
@@ -55,12 +57,75 @@ function sendTelegramApi(endpoint, payload) {
   });
 }
 
+/**
+ * Sinkronisasi Otomatis: Cek tiket di Supabase yang belum dikirim ke Telegram
+ * Menjamin 100% tiket dari Netlify atau browser manapun tetap tersiar ke Telegram
+ */
+async function syncUnbroadcastedTasks() {
+  if (!isRunning) return;
+  try {
+    const { data: unsent, error } = await supabase
+      .from('tugas')
+      .select('*')
+      .is('telegram_message_id', null)
+      .in('status', ['menunggu', 'Open'])
+      .order('id', { ascending: true })
+      .limit(5);
+
+    if (error || !unsent || unsent.length === 0) return;
+
+    for (const t of unsent) {
+      const baseUrl = (process.env.APP_FRONTEND_URL || 'https://sto-pykv2.netlify.app').replace(/\/+$/, '');
+      const magicUrl = `${baseUrl}/tiket/${t.id}`;
+      const odpKode = t.odp_kode || (t.odp_id ? `ODP-ID-${t.odp_id}` : 'ODP-PYK-01/04');
+
+      const msg = [
+        `🚨 <b>[TELKOM AKSES — NOC DISPATCH STO PAYAKUMBUH]</b>`,
+        `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+        `⚡ <b>WORK ORDER / TIKET GANGGUAN BARU</b>`,
+        `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+        `📋 <b>No. Tiket:</b> #${t.id}`,
+        `🔌 <b>Titik ODP:</b> <code>${telegramService.esc(odpKode)}</code>`,
+        `📍 <b>Lokasi / Sektor:</b> ${telegramService.esc(t.lokasi)}`,
+        `💼 <b>Klasifikasi Pekerjaan:</b> ${telegramService.esc(t.jenis_kerja)}`,
+        `⏱️ <b>Target SLA:</b> &lt; 3 Jam (Prioritas Utama)`,
+        `📊 <b>Status Dispatch:</b> 📢 <code>OPEN POOL (Menunggu Klaim Teknisi)</code>`,
+        `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+        `⚡ <i>Siapapun teknisi siaga di grup silakan klik tombol di bawah untuk mengklaim tiket ini:</i>`,
+        `👉 <a href="${magicUrl}">Buka Detail Tiket Web</a>`
+      ].join('\n');
+
+      const res = await telegramService.kirimKeGrup(msg, {
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: '🔘 AMBIL TIKET SEKARANG', callback_data: `claim_${t.id}` }
+            ],
+            [
+              { text: '🌐 BUKA DETAIL TIKET', url: magicUrl }
+            ]
+          ]
+        }
+      });
+
+      if (res && res.result?.message_id) {
+        await supabase
+          .from('tugas')
+          .update({ telegram_message_id: String(res.result.message_id) })
+          .eq('id', t.id);
+        console.log(`[Bot Worker] Auto-broadcasted unsent ticket #${t.id} to Telegram! Message ID: ${res.result.message_id}`);
+      }
+    }
+  } catch (err) {
+    console.warn('[syncUnbroadcastedTasks Notice]', err.message);
+  }
+}
+
 async function handleCallbackQuery(cb) {
   const queryId = cb.id;
   const data = cb.data || '';
   const fromUser = cb.from || {};
   const chatId = cb.message?.chat?.id || process.env.TELEGRAM_GROUP_ID;
-  const messageId = cb.message?.message_id;
 
   const techName = [fromUser.first_name, fromUser.last_name].filter(Boolean).join(' ') || fromUser.username || 'Teknisi Lapangan';
   const usernameTag = fromUser.username ? `@${fromUser.username}` : techName;
@@ -105,7 +170,7 @@ async function handleCallbackQuery(cb) {
         return;
       }
 
-      if (tugasRow.teknisi_id && tugasRow.status === 'Progress') {
+      if (tugasRow.teknisi_id && (tugasRow.status === 'Progress' || tugasRow.status === 'In-Progress')) {
         await sendTelegramApi('answerCallbackQuery', {
           callback_query_id: queryId,
           text: `⚠️ Tiket #${tugasId} SUDAH DIAMBIL oleh teknisi lain! Silakan pilih tiket siaga lainnya.`,
@@ -273,10 +338,18 @@ function start() {
       console.warn('[Bot Worker Init Notice]', err.message);
       pollUpdates();
     });
+
+  // Jalankan auto-sync broadcast setiap 4 detik untuk memeriksa tiket dari Supabase yang belum dikirim
+  syncUnbroadcastedTasks();
+  syncIntervalTimer = setInterval(syncUnbroadcastedTasks, 4000);
 }
 
 function stop() {
   isRunning = false;
+  if (syncIntervalTimer) {
+    clearInterval(syncIntervalTimer);
+    syncIntervalTimer = null;
+  }
 }
 
 module.exports = {
