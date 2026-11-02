@@ -81,10 +81,16 @@ export default function DashboardTeknisi() {
   
   // Memoized filter tugas agar tidak di-recompute pada setiap re-render di HP teknisi
   const { openTasks, myActiveTasks, myDoneTasks, activeTasks } = useMemo(() => {
-    const open = (tugas || []).filter(t => !t.teknisi_id && (t.status === 'Open' || !t.status));
+    const open = (tugas || []).filter(t => 
+      (!t.teknisi_id || t.status === 'Open' || t.status === 'menunggu' || t.status === 'open') && 
+      t.status !== 'Progress' && 
+      t.status !== 'In-Progress' && 
+      t.status !== 'Done' && 
+      t.status !== 'Closed'
+    );
     const mine = (tugas || []).filter(t => Number(t.teknisi_id) === Number(user?.id));
-    const active = mine.filter(t => t.status !== 'Done');
-    const done = mine.filter(t => t.status === 'Done');
+    const active = mine.filter(t => t.status !== 'Done' && t.status !== 'Closed');
+    const done = mine.filter(t => t.status === 'Done' || t.status === 'Closed');
     const primaryActive = active.length > 0 ? active : (mine.length > 0 ? mine : []);
     return { openTasks: open, myActiveTasks: active, myDoneTasks: done, activeTasks: primaryActive };
   }, [tugas, user?.id]);
@@ -241,7 +247,6 @@ export default function DashboardTeknisi() {
                         <button
                           onClick={async () => {
                             await claimTugas(t.id, user.id);
-                            showToast(`Tiket #${t.id} berhasil Anda ambil! Segera ajukan permohonan material ke gudang.`, 'success');
                           }}
                           className="w-full py-3 px-4 rounded-2xl bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-xs shadow-lg shadow-blue-900/40 transition active:scale-98 cursor-pointer flex items-center justify-center gap-2"
                         >

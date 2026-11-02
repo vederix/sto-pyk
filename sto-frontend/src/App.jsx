@@ -12,6 +12,7 @@ const DashboardPimpinan = lazy(() => import('./pages/DashboardPimpinan'));
 const DashboardTeknisi = lazy(() => import('./pages/DashboardTeknisi'));
 const GudangDashboard = lazy(() => import('./pages/GudangDashboard'));
 const AuditReportPage = lazy(() => import('./pages/AuditReportPage'));
+const TiketDetailPage = lazy(() => import('./pages/TiketDetailPage'));
 
 // Lightweight Page Loading Fallback (Responsive & Minimal Overhead)
 function PageLoader() {
@@ -54,6 +55,7 @@ function AppContent() {
           <Route path="/dashboard-teknisi" element={<DashboardTeknisi />} />
           <Route path="/dashboard-gudang" element={<GudangDashboard />} />
           <Route path="/laporan-audit" element={<AuditReportPage />} />
+          <Route path="/tiket/:id" element={<TiketDetailPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>

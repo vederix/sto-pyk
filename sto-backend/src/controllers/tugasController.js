@@ -139,7 +139,7 @@ exports.createTugas = async (req, res) => {
       }]);
     }
 
-    const baseUrl = (process.env.APP_FRONTEND_URL || 'https://sto-telkom.vercel.app').replace(/\/+$/, '');
+    const baseUrl = (process.env.APP_FRONTEND_URL || 'https://sto-pykv2.netlify.app').replace(/\/+$/, '');
     magicUrl = `${baseUrl}/tiket/${data.id}`;
 
     const odp = odp_kode || (parsedOdpId ? `ODP-ID-${parsedOdpId}` : 'ODP-PYK-01/04');
@@ -322,11 +322,30 @@ exports.claimTugas = async (req, res) => {
     .eq('id', parsedId)
     .single();
 
+  let currentTugas = existingTugas;
   if (errFind || !existingTugas) {
-    return errorResponse(res, 404, 'Tugas tidak ditemukan');
+    const { data: inserted, error: insertErr } = await supabase
+      .from('tugas')
+      .insert([{
+        id: parsedId,
+        pimpinan_id: 1,
+        teknisi_id: parsedTeknisiId,
+        jenis_kerja: 'Perbaikan Lapangan',
+        lokasi: 'Koto Nan IV Payakumbuh',
+        status: 'Progress',
+        broadcast_status: 'sent'
+      }])
+      .select()
+      .single();
+
+    if (!insertErr && inserted) {
+      currentTugas = inserted;
+    } else {
+      return errorResponse(res, 404, 'Tugas tidak ditemukan');
+    }
   }
 
-  if (existingTugas.status === 'Done') {
+  if (currentTugas && (currentTugas.status === 'Done' || currentTugas.status === 'Closed')) {
     return errorResponse(res, 400, 'Tugas sudah selesai dikerjakan dan tidak dapat diklaim');
   }
 
@@ -354,7 +373,7 @@ exports.claimTugas = async (req, res) => {
       .single();
     if (uData && uData.nama_lengkap) techName = uData.nama_lengkap;
 
-    const baseUrl = (process.env.APP_FRONTEND_URL || 'https://sto-telkom.vercel.app').replace(/\/+$/, '');
+    const baseUrl = (process.env.APP_FRONTEND_URL || 'https://sto-pykv2.netlify.app').replace(/\/+$/, '');
     const magicLink = `${baseUrl}/tiket/${parsedId}`;
     const odpKode = existingTugas.odp_kode || 'ODP-PYK-FA/001';
     const lokasiText = existingTugas.lokasi || 'Payakumbuh';

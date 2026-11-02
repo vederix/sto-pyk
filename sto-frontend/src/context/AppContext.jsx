@@ -442,20 +442,24 @@ export function AppProvider({ children }) {
       return false;
     }
 
-    const targetTask = tugas.find(t => Number(t.id) === parsedTugasId);
-    if (!targetTask) {
-      showToast('Tiket tugas tidak ditemukan!', 'error');
-      return false;
+    let targetTask = tugas.find(t => Number(t.id) === parsedTugasId);
+    if (!targetTask && isSupabaseConfigured()) {
+      try {
+        const { data: dbTask } = await supabase.from('tugas').select('*').eq('id', parsedTugasId).single();
+        if (dbTask) targetTask = dbTask;
+      } catch { /* fallback */ }
     }
 
-    if (targetTask.status === 'Done') {
-      showToast('Tiket ini sudah selesai dikerjakan!', 'error');
-      return false;
-    }
+    if (targetTask) {
+      if (targetTask.status === 'Done' || targetTask.status === 'Closed') {
+        showToast('Tiket ini sudah selesai dikerjakan!', 'error');
+        return false;
+      }
 
-    if (targetTask.teknisi_id && targetTask.teknisi_id !== parsedTeknisiId && targetTask.status !== 'Open') {
-      showToast('Tiket ini sudah diambil oleh teknisi lain!', 'error');
-      return false;
+      if (targetTask.teknisi_id && Number(targetTask.teknisi_id) !== Number(parsedTeknisiId) && (targetTask.status === 'Progress' || targetTask.status === 'In-Progress')) {
+        showToast('Tiket ini sudah diambil oleh teknisi lain!', 'error');
+        return false;
+      }
     }
 
     // 1. Sinkronisasi ke Backend Express API jika backend berjalan
@@ -464,32 +468,32 @@ export function AppProvider({ children }) {
       await api.patch(`/tugas/${parsedTugasId}/claim`, { teknisi_id: parsedTeknisiId });
       claimedViaBackend = true;
     } catch (apiErr) {
-      console.warn('[claimTugas] Backend Express API notice:', apiErr?.response?.data?.message || apiErr?.message);
+      console.log('[claimTugas] Backend notice, beralih ke sinkronisasi langsung Supabase Cloud');
     }
 
     // 2. Update state React lokal
-    setTugas(prev => prev.map(t => {
-      if (Number(t.id) === parsedTugasId) {
-        return {
-          ...t,
-          teknisi_id: parsedTeknisiId,
-          status: 'Progress'
-        };
+    setTugas(prev => {
+      const exists = prev.some(t => Number(t.id) === parsedTugasId);
+      if (exists) {
+        return prev.map(t => Number(t.id) === parsedTugasId ? { ...t, teknisi_id: parsedTeknisiId, status: 'Progress' } : t);
       }
-      return t;
-    }));
+      if (targetTask) {
+        return [{ ...targetTask, teknisi_id: parsedTeknisiId, status: 'Progress' }, ...prev];
+      }
+      return prev;
+    });
 
-    // 3. Sinkronisasi langsung ke Supabase HANYA jika backend offline
-    if (!claimedViaBackend && isSupabaseConfigured()) {
+    // 3. Sinkronisasi langsung ke Supabase Cloud (menjamin real-time persistence)
+    if (isSupabaseConfigured()) {
       try {
         const { data: updateRes, error: updateErr } = await supabase.from('tugas').update({
           teknisi_id: parsedTeknisiId,
           status: 'Progress'
         }).eq('id', parsedTugasId).select();
 
-        // Jika baris tiket belum ada di Supabase (karena seed lokal), insert ke tabel tugas Supabase
+        // Jika baris tiket belum ada di Supabase, insert ke tabel tugas Supabase
         if (!updateErr && (!updateRes || updateRes.length === 0)) {
-          const matched = targetTask;
+          const matched = targetTask || {};
           await supabase.from('tugas').insert([{
             id: parsedTugasId,
             pimpinan_id: Number(matched.pimpinan_id) || 1,

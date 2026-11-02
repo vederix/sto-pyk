@@ -22,6 +22,7 @@ require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 // 2. Mengimpor konfigurasi rute dan middleware dari file app.js
 const app = require('./src/app');
+const telegramBotWorker = require('./src/services/telegramBotWorker');
 
 // 3. Menentukan port server (gunakan dari .env jika ada, atau default ke 5000)
 const PORT = process.env.PORT || 5000;
@@ -33,4 +34,7 @@ app.listen(PORT, () => {
   console.log(`📍 Alamat API: http://localhost:${PORT}`);
   console.log(`📡 Terhubung dengan database Supabase Cloud`);
   console.log(`====================================================`);
+
+  // Jalankan background worker Telegram bot listener
+  telegramBotWorker.start();
 });
