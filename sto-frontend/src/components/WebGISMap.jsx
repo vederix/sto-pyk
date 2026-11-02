@@ -209,8 +209,8 @@ export default function WebGISMap({
 
   // Filter & Grouping State
   const [odpStatusFilter, setOdpStatusFilter] = useState('all'); // 'all' | 'Tersedia' | 'Penuh' | 'Maintenance'
-  const [showTasks, setShowTasks] = useState(true);
-  const [showOdpPoints, setShowOdpPoints] = useState(true);
+  const [showTasks] = useState(true);
+  const [showOdpPoints] = useState(true);
   const [showGroupDrawer, setShowGroupDrawer] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState({
     'Koto Nan IV (Sentral STO)': true,

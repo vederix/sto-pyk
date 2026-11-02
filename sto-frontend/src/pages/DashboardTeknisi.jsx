@@ -99,11 +99,12 @@ export default function DashboardTeknisi() {
   }, [permohonan, tugas, user?.id]);
 
   // Proteksi hak akses sesi teknisi
+  const userRole = user?.role;
   useEffect(() => {
-    if (!user || user.role !== 'teknisi') {
+    if (!userRole || userRole !== 'teknisi') {
       navigate('/');
     }
-  }, [navigate]);
+  }, [navigate, userRole]);
 
 
 

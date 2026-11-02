@@ -62,11 +62,12 @@ export default function GudangDashboard() {
     kode: ''
   });
 
+  const userRole = user?.role;
   useEffect(() => {
-    if (!user || user.role !== 'gudang') {
+    if (!userRole || userRole !== 'gudang') {
       navigate('/');
     }
-  }, [navigate]);
+  }, [navigate, userRole]);
 
   // Lookup maps with O(1) performance for fast multi-table joins
   const { taskMap, userMap, itemMap } = useMemo(() => {

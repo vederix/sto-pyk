@@ -1,63 +1,17 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Palette, Check } from 'lucide-react';
+import React, { useEffect, useRef } from 'react';
 
-export const PARTICLE_THEMES = {
+const PARTICLE_THEMES = {
   burgundy: {
     id: 'burgundy',
     label: 'Merah Burgundy',
     dotColor: '#be123c',
     lineColor: 'rgba(190, 18, 60, ',
-    glow: 'rgba(190, 18, 60, 0.4)',
-    accentBg: 'bg-rose-900/40 border-rose-500/50 text-rose-300'
-  },
-  navy: {
-    id: 'navy',
-    label: 'Biru Dongker',
-    dotColor: '#38bdf8',
-    lineColor: 'rgba(56, 189, 248, ',
-    glow: 'rgba(56, 189, 248, 0.4)',
-    accentBg: 'bg-blue-900/40 border-blue-500/50 text-blue-300'
-  },
-  emerald: {
-    id: 'emerald',
-    label: 'Cyber Emerald',
-    dotColor: '#10b981',
-    lineColor: 'rgba(16, 185, 129, ',
-    glow: 'rgba(16, 185, 129, 0.4)',
-    accentBg: 'bg-emerald-900/40 border-emerald-500/50 text-emerald-300'
-  },
-  amber: {
-    id: 'amber',
-    label: 'Amber Gold',
-    dotColor: '#f59e0b',
-    lineColor: 'rgba(245, 158, 11, ',
-    glow: 'rgba(245, 158, 11, 0.4)',
-    accentBg: 'bg-amber-900/40 border-amber-500/50 text-amber-300'
-  },
-  white: {
-    id: 'white',
-    label: 'Kristal Putih',
-    dotColor: '#f8fafc',
-    lineColor: 'rgba(248, 250, 252, ',
-    glow: 'rgba(255, 255, 255, 0.4)',
-    accentBg: 'bg-slate-700/40 border-slate-400/50 text-slate-200'
+    glow: 'rgba(190, 18, 60, 0.4)'
   }
 };
 
-export default function ParticleBackground({ activeColor = 'burgundy', onColorChange, showSelector = true }) {
+export default function ParticleBackground({ activeColor = 'burgundy' }) {
   const canvasRef = useRef(null);
-  const [selectedColor, setSelectedColor] = useState(activeColor);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-
-  useEffect(() => {
-    setSelectedColor(activeColor);
-  }, [activeColor]);
-
-  const handleSelectColor = (key) => {
-    setSelectedColor(key);
-    setDropdownOpen(false);
-    if (onColorChange) onColorChange(key);
-  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -76,10 +30,10 @@ export default function ParticleBackground({ activeColor = 'burgundy', onColorCh
 
     window.addEventListener('resize', handleResize);
 
-    // Particle nodes setup
+    // Setup node-node fiber optic network
     const particleCount = Math.min(width > 768 ? 75 : 40, 100);
     const particles = [];
-    const colorConfig = PARTICLE_THEMES[selectedColor] || PARTICLE_THEMES.burgundy;
+    const colorConfig = PARTICLE_THEMES[activeColor] || PARTICLE_THEMES.burgundy;
 
     for (let i = 0; i < particleCount; i++) {
       particles.push({
@@ -110,139 +64,76 @@ export default function ParticleBackground({ activeColor = 'burgundy', onColorCh
     const render = () => {
       ctx.clearRect(0, 0, width, height);
 
-      // Draw particle connections & movement
+      // Render titik node partikel
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
 
         p.x += p.vx;
         p.y += p.vy;
 
-        // Bounce on edges
         if (p.x < 0 || p.x > width) p.vx *= -1;
         if (p.y < 0 || p.y > height) p.vy *= -1;
 
-        // Draw particle dot
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fillStyle = colorConfig.dotColor;
         ctx.shadowBlur = 10;
         ctx.shadowColor = colorConfig.glow;
+        ctx.globalAlpha = p.alpha;
         ctx.fill();
 
-        // Connect particles within distance
+        // Hubungkan garis optik jika jarak berdekatan
         for (let j = i + 1; j < particles.length; j++) {
           const p2 = particles[j];
           const dx = p.x - p2.x;
           const dy = p.y - p2.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
 
-          if (dist < 130) {
-            const lineAlpha = (1 - dist / 130) * 0.35;
+          if (dist < 120) {
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `${colorConfig.lineColor}${lineAlpha})`;
+            ctx.strokeStyle = `${colorConfig.lineColor}${1 - dist / 120})`;
             ctx.lineWidth = 0.8;
             ctx.stroke();
           }
         }
 
-        // Mouse connection effect
+        // Interaksi kursor mouse
         if (mouse.x !== null && mouse.y !== null) {
-          const mdx = p.x - mouse.x;
-          const mdy = p.y - mouse.y;
-          const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
-          if (mdist < mouse.radius) {
-            const mLineAlpha = (1 - mdist / mouse.radius) * 0.6;
+          const dx = p.x - mouse.x;
+          const dy = p.y - mouse.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < mouse.radius) {
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(mouse.x, mouse.y);
-            ctx.strokeStyle = `${colorConfig.lineColor}${mLineAlpha})`;
+            ctx.strokeStyle = `${colorConfig.lineColor}${(1 - dist / mouse.radius) * 0.7})`;
             ctx.lineWidth = 1.2;
             ctx.stroke();
           }
         }
       }
 
+      ctx.globalAlpha = 1.0;
+      ctx.shadowBlur = 0;
       animationFrameId = requestAnimationFrame(render);
     };
 
     render();
 
     return () => {
-      cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseleave', handleMouseLeave);
+      cancelAnimationFrame(animationFrameId);
     };
-  }, [selectedColor]);
-
-  const activeTheme = PARTICLE_THEMES[selectedColor] || PARTICLE_THEMES.burgundy;
+  }, [activeColor]);
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
       <canvas ref={canvasRef} className="w-full h-full block" />
-
-      {/* Compact Floating Color Switcher Dropdown */}
-      {showSelector && (
-        <div className="absolute top-4 right-4 z-20 pointer-events-auto">
-          <div className="relative">
-            <button
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-slate-900/80 hover:bg-slate-900 border border-slate-700/80 backdrop-blur-xl shadow-xl transition-all active:scale-95 text-xs text-slate-200 cursor-pointer"
-              title="Pilih Warna Partikel"
-            >
-              <span
-                className="w-3.5 h-3.5 rounded-full border border-white/60 shadow-sm flex-shrink-0"
-                style={{ backgroundColor: activeTheme.dotColor }}
-              />
-              <Palette className="w-3.5 h-3.5 text-slate-400" />
-              <span className="hidden sm:inline font-medium text-[11px]">{activeTheme.label}</span>
-            </button>
-
-            {dropdownOpen && (
-              <>
-                {/* Backdrop to close */}
-                <div
-                  className="fixed inset-0 z-30 pointer-events-auto"
-                  onClick={() => setDropdownOpen(false)}
-                />
-
-                {/* Dropdown Menu */}
-                <div className="absolute right-0 top-full mt-2 w-44 z-40 bg-slate-900/95 backdrop-blur-xl border border-slate-700 rounded-2xl shadow-2xl p-1.5 space-y-1 animate-in fade-in zoom-in-95">
-                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2.5 py-1">
-                    Tema Partikel
-                  </div>
-                  {Object.keys(PARTICLE_THEMES).map((key) => {
-                    const item = PARTICLE_THEMES[key];
-                    const isSelected = selectedColor === key;
-                    return (
-                      <button
-                        key={key}
-                        onClick={() => handleSelectColor(key)}
-                        className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs transition cursor-pointer ${
-                          isSelected
-                            ? 'bg-burgundy-600/30 text-white font-semibold border border-burgundy-500/40'
-                            : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <span
-                            className="w-3 h-3 rounded-full border border-white/40 flex-shrink-0"
-                            style={{ backgroundColor: item.dotColor }}
-                          />
-                          <span className="text-[11px]">{item.label}</span>
-                        </div>
-                        {isSelected && <Check className="w-3.5 h-3.5 text-burgundy-400" />}
-                      </button>
-                    );
-                  })}
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

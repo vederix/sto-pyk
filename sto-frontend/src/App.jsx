@@ -40,10 +40,6 @@ function AppContent() {
     setShowSplash(false);
   };
 
-  const handleTriggerSplash = () => {
-    setShowSplash(true);
-  };
-
   return (
     <ErrorBoundary>
       {showSplash && (
@@ -52,14 +48,8 @@ function AppContent() {
 
       <Suspense fallback={<PageLoader />}>
         <Routes>
-          <Route
-            path="/"
-            element={<Login onTriggerSplash={handleTriggerSplash} />}
-          />
-          <Route
-            path="/login"
-            element={<Login onTriggerSplash={handleTriggerSplash} />}
-          />
+          <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/dashboard-pimpinan" element={<DashboardPimpinan />} />
           <Route path="/dashboard-teknisi" element={<DashboardTeknisi />} />
           <Route path="/dashboard-gudang" element={<GudangDashboard />} />

@@ -19,7 +19,7 @@ import {
   EyeOff
 } from 'lucide-react';
 
-export default function Login({ onTriggerSplash }) {
+export default function Login() {
   const [authMode, setAuthMode] = useState('login'); // 'login' | 'register'
 
   // Login Form States - Clean production state
@@ -32,11 +32,9 @@ export default function Login({ onTriggerSplash }) {
   const [regEmail, setRegEmail] = useState('');
   const [regPassword, setRegPassword] = useState('');
   const [showRegPassword, setShowRegPassword] = useState(false);
-  const regRole = 'teknisi'; // Strictly Teknisi! Pimpinan and Gudang cannot be self-registered
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [particleColor, setParticleColor] = useState('burgundy');
 
   const { toggleTheme, isDark } = useTheme();
   const { users, setCurrentUser, addUser, showToast } = useApp();
@@ -200,11 +198,7 @@ export default function Login({ onTriggerSplash }) {
     }`}>
       
       {/* Interactive Canvas Particle Background */}
-      <ParticleBackground
-        activeColor={particleColor}
-        onColorChange={(newCol) => setParticleColor(newCol)}
-        showSelector={false}
-      />
+      <ParticleBackground />
 
       {/* Top Left Theme Toggle */}
       <div className="absolute top-4 left-4 z-20 flex items-center gap-2">
