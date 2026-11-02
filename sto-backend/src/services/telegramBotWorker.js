@@ -15,6 +15,7 @@ const telegramService = require('./telegramService');
  */
 
 let isRunning = false;
+let isSyncing = false;
 let pollingOffset = 0;
 let syncIntervalTimer = null;
 
@@ -62,7 +63,8 @@ function sendTelegramApi(endpoint, payload) {
  * Menjamin 100% tiket dari Netlify atau browser manapun tetap tersiar ke Telegram
  */
 async function syncUnbroadcastedTasks() {
-  if (!isRunning) return;
+  if (!isRunning || isSyncing) return;
+  isSyncing = true;
   try {
     const { data: unsent, error } = await supabase
       .from('tugas')
@@ -118,6 +120,8 @@ async function syncUnbroadcastedTasks() {
     }
   } catch (err) {
     console.warn('[syncUnbroadcastedTasks Notice]', err.message);
+  } finally {
+    isSyncing = false;
   }
 }
 

@@ -4,9 +4,9 @@
  * sekalipun server backend Express lokal sedang offline atau tidak dapat dijangkau dari hosting (Netlify/Vercel).
  */
 
-const TELEGRAM_BOT_TOKEN = '8893464249:AAFhp-jmadAfKHrYfM56EzWyLN2d9_iaMm4';
-const TELEGRAM_GROUP_ID = '-1003989668451';
-const APP_URL = 'https://sto-pykv2.netlify.app';
+const TELEGRAM_BOT_TOKEN = import.meta.env.VITE_TELEGRAM_BOT_TOKEN || '8893464249:AAFhp-jmadAfKHrYfM56EzWyLN2d9_iaMm4';
+const TELEGRAM_GROUP_ID = import.meta.env.VITE_TELEGRAM_GROUP_ID || '-1003989668451';
+const APP_URL = (import.meta.env.VITE_APP_URL || window?.location?.origin || 'https://sto-pykv2.netlify.app').replace(/\/+$/, '');
 
 function esc(text) {
   if (text === null || text === undefined) return '';
@@ -76,3 +76,4 @@ export async function broadcastTicketToTelegram(ticket) {
     return null;
   }
 }
+

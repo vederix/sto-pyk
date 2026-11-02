@@ -35,5 +35,15 @@ app.use('/api/permohonan', permohonanRoutes);   // Permohonan material ke gudang
 app.use('/api/odp', odpRoutes);                 // Pemetaan Titik ODP / Jaringan FO
 app.use('/api/laporan', laporanRoutes);         // Berita acara & audit laporan
 
+// Middleware Penangkal Error Global (Mencegah server crash saat request bermasalah)
+app.use((err, req, res, next) => {
+  console.error('[Global Error Handler]', err.stack || err.message);
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || 'Terjadi kesalahan internal pada server backend STO',
+    error: process.env.NODE_ENV === 'production' ? null : err.message
+  });
+});
+
 // Mengekspor objek app agar bisa dijalankan oleh server.js
 module.exports = app;
