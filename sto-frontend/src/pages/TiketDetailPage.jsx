@@ -123,10 +123,18 @@ export default function TiketDetailPage() {
             Tiket dengan ID #{id} tidak ada di database sistem atau telah dihapus.
           </p>
           <button
-            onClick={() => navigate('/dashboard-teknisi')}
+            onClick={() => {
+              if (user?.role === 'pimpinan') {
+                navigate('/dashboard-pimpinan?tab=kelola-tugas');
+              } else if (user?.role === 'gudang') {
+                navigate('/dashboard-gudang?tab=output-barang');
+              } else {
+                navigate('/dashboard-teknisi?tab=tiket');
+              }
+            }}
             className="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition cursor-pointer"
           >
-            Kembali ke Dashboard Teknisi
+            Kembali ke Dashboard
           </button>
         </div>
       </div>

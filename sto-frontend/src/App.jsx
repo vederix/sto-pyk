@@ -1,4 +1,4 @@
-import React, { useState, lazy, Suspense } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { AppProvider, useApp } from './context/AppContext';
@@ -100,6 +100,11 @@ function AppContent() {
     return !seen;
   });
 
+  useEffect(() => {
+    // Ensure flag is set so refreshes never re-trigger splash
+    sessionStorage.setItem('sto_splash_seen', 'true');
+  }, []);
+
   const handleSplashFinish = () => {
     sessionStorage.setItem('sto_splash_seen', 'true');
     setShowSplash(false);
@@ -154,6 +159,14 @@ function AppContent() {
           />
           <Route
             path="/pegawai"
+            element={
+              <ProtectedRoute allowedRoles={['pimpinan']}>
+                <DashboardPimpinan defaultTab="kelola-pegawai" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/kelola-pegawai"
             element={
               <ProtectedRoute allowedRoles={['pimpinan']}>
                 <DashboardPimpinan defaultTab="kelola-pegawai" />
@@ -237,10 +250,158 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/odp"
+            element={
+              <ProtectedRoute allowedRoles={['pimpinan']}>
+                <DashboardPimpinan defaultTab="tabel-odp" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/aset"
+            element={
+              <ProtectedRoute allowedRoles={['pimpinan']}>
+                <DashboardPimpinan defaultTab="tabel-odp" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/laporan-gudang"
+            element={
+              <ProtectedRoute allowedRoles={['pimpinan']}>
+                <DashboardPimpinan defaultTab="laporan-gudang" />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Teknisi Sub-Routes */}
+          <Route
+            path="/tiket"
+            element={
+              <ProtectedRoute allowedRoles={['teknisi']}>
+                <DashboardTeknisi defaultTab="tiket" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/surat-permohonan"
+            element={
+              <ProtectedRoute allowedRoles={['teknisi']}>
+                <DashboardTeknisi defaultTab="surat-permohonan" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/permohonan"
+            element={
+              <ProtectedRoute allowedRoles={['teknisi']}>
+                <DashboardTeknisi defaultTab="surat-permohonan" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/cetak-surat"
+            element={
+              <ProtectedRoute allowedRoles={['teknisi']}>
+                <DashboardTeknisi defaultTab="cetak-surat" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/status-approval"
+            element={
+              <ProtectedRoute allowedRoles={['teknisi']}>
+                <DashboardTeknisi defaultTab="status-approval" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/pengerjaan"
+            element={
+              <ProtectedRoute allowedRoles={['teknisi']}>
+                <DashboardTeknisi defaultTab="pengerjaan" />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Gudang Sub-Routes */}
+          <Route
+            path="/stok"
+            element={
+              <ProtectedRoute allowedRoles={['gudang']}>
+                <GudangDashboard defaultTab="daftar-barang" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/stok-barang"
+            element={
+              <ProtectedRoute allowedRoles={['gudang']}>
+                <GudangDashboard defaultTab="daftar-barang" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/output-barang"
+            element={
+              <ProtectedRoute allowedRoles={['gudang']}>
+                <GudangDashboard defaultTab="output-barang" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/rilis-barang"
+            element={
+              <ProtectedRoute allowedRoles={['gudang']}>
+                <GudangDashboard defaultTab="output-barang" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/input-barang"
+            element={
+              <ProtectedRoute allowedRoles={['gudang']}>
+                <GudangDashboard defaultTab="input-barang" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/pengadaan"
+            element={
+              <ProtectedRoute allowedRoles={['gudang']}>
+                <GudangDashboard defaultTab="input-barang" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/cetak-surat-jalan"
+            element={
+              <ProtectedRoute allowedRoles={['gudang']}>
+                <GudangDashboard defaultTab="cetak-surat-jalan" />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/surat-jalan"
+            element={
+              <ProtectedRoute allowedRoles={['gudang']}>
+                <GudangDashboard defaultTab="cetak-surat-jalan" />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Dedicated Sub-Pages */}
           <Route
             path="/laporan-audit"
+            element={
+              <ProtectedRoute>
+                <AuditReportPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/laporan-kerja"
             element={
               <ProtectedRoute>
                 <AuditReportPage />

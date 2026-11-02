@@ -46,7 +46,7 @@ export default function GudangDashboard({ defaultTab }) {
   const user = JSON.parse(localStorage.getItem('user')) || { id: 4, nama_lengkap: 'Siti Rahmawati', role: 'gudang' };
 
   const [activeMenu, setActiveMenu] = useState(() => {
-    return defaultTab || urlTab || sessionStorage.getItem('sto_gudang_tab') || 'daftar-barang';
+    return urlTab || defaultTab || sessionStorage.getItem('sto_gudang_tab') || 'daftar-barang';
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -68,19 +68,17 @@ export default function GudangDashboard({ defaultTab }) {
 
   // Sync activeMenu with URL query params and sessionStorage
   useEffect(() => {
-    if (defaultTab) {
-      setActiveMenu(defaultTab);
-      sessionStorage.setItem('sto_gudang_tab', defaultTab);
-    } else if (urlTab && urlTab !== activeMenu) {
-      setActiveMenu(urlTab);
-      sessionStorage.setItem('sto_gudang_tab', urlTab);
+    const target = urlTab || defaultTab;
+    if (target && target !== activeMenu) {
+      setActiveMenu(target);
+      sessionStorage.setItem('sto_gudang_tab', target);
     }
   }, [urlTab, defaultTab]);
 
   const handleTabChange = (newTab) => {
     setActiveMenu(newTab);
     sessionStorage.setItem('sto_gudang_tab', newTab);
-    setSearchParams({ tab: newTab }, { replace: true });
+    navigate(`/dashboard-gudang?tab=${newTab}`, { replace: true });
   };
 
   // Graceful role protection
@@ -869,7 +867,7 @@ export default function GudangDashboard({ defaultTab }) {
 
                   <button
                     type="button"
-                    onClick={() => setActiveMenu('input-barang')}
+                    onClick={() => handleTabChange('input-barang')}
                     className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-lg shadow-emerald-600/30 transition cursor-pointer whitespace-nowrap"
                   >
                     <PlusCircle className="w-4 h-4" />

@@ -55,11 +55,14 @@ export default function Login() {
           }
 
           if (savedUser.role === 'pimpinan') {
-            navigate('/dashboard-pimpinan', { replace: true });
+            const pTab = sessionStorage.getItem('sto_pimpinan_tab');
+            navigate(pTab ? `/dashboard-pimpinan?tab=${pTab}` : '/dashboard-pimpinan', { replace: true });
           } else if (savedUser.role === 'teknisi') {
-            navigate('/dashboard-teknisi', { replace: true });
+            const tTab = sessionStorage.getItem('sto_teknisi_tab');
+            navigate(tTab ? `/dashboard-teknisi?tab=${tTab}` : '/dashboard-teknisi', { replace: true });
           } else if (savedUser.role === 'gudang') {
-            navigate('/dashboard-gudang', { replace: true });
+            const gTab = sessionStorage.getItem('sto_gudang_tab');
+            navigate(gTab ? `/dashboard-gudang?tab=${gTab}` : '/dashboard-gudang', { replace: true });
           }
         }
       }
@@ -167,11 +170,14 @@ export default function Login() {
       }
 
       if (loggedInUser.role === 'pimpinan') {
-        navigate('/dashboard-pimpinan');
+        const pTab = sessionStorage.getItem('sto_pimpinan_tab');
+        navigate(pTab ? `/dashboard-pimpinan?tab=${pTab}` : '/dashboard-pimpinan');
       } else if (loggedInUser.role === 'teknisi') {
-        navigate('/dashboard-teknisi');
+        const tTab = sessionStorage.getItem('sto_teknisi_tab');
+        navigate(tTab ? `/dashboard-teknisi?tab=${tTab}` : '/dashboard-teknisi');
       } else if (loggedInUser.role === 'gudang') {
-        navigate('/dashboard-gudang');
+        const gTab = sessionStorage.getItem('sto_gudang_tab');
+        navigate(gTab ? `/dashboard-gudang?tab=${gTab}` : '/dashboard-gudang');
       } else {
         navigate('/dashboard-pimpinan');
       }

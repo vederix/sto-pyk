@@ -77,7 +77,7 @@ export default function DashboardTeknisi({ defaultTab }) {
   const user = JSON.parse(localStorage.getItem('user')) || { id: 2, nama_lengkap: 'Ahmad Fadli', role: 'teknisi' };
 
   const [activeMenu, setActiveMenu] = useState(() => {
-    return defaultTab || urlTab || sessionStorage.getItem('sto_teknisi_tab') || 'tiket';
+    return urlTab || defaultTab || sessionStorage.getItem('sto_teknisi_tab') || 'tiket';
   });
   const [modalTugasId, setModalTugasId] = useState(null);
   const [uploadTugasId, setUploadTugasId] = useState(null);
@@ -85,19 +85,17 @@ export default function DashboardTeknisi({ defaultTab }) {
 
   // Sync activeMenu with URL query params and sessionStorage
   useEffect(() => {
-    if (defaultTab) {
-      setActiveMenu(defaultTab);
-      sessionStorage.setItem('sto_teknisi_tab', defaultTab);
-    } else if (urlTab && urlTab !== activeMenu) {
-      setActiveMenu(urlTab);
-      sessionStorage.setItem('sto_teknisi_tab', urlTab);
+    const target = urlTab || defaultTab;
+    if (target && target !== activeMenu) {
+      setActiveMenu(target);
+      sessionStorage.setItem('sto_teknisi_tab', target);
     }
   }, [urlTab, defaultTab]);
 
   const handleTabChange = (newTab) => {
     setActiveMenu(newTab);
     sessionStorage.setItem('sto_teknisi_tab', newTab);
-    setSearchParams({ tab: newTab }, { replace: true });
+    navigate(`/dashboard-teknisi?tab=${newTab}`, { replace: true });
   };
   
   // Memoized filter tugas agar tidak di-recompute pada setiap re-render di HP teknisi
@@ -364,7 +362,7 @@ export default function DashboardTeknisi({ defaultTab }) {
                           </button>
 
                           <button
-                            onClick={() => setActiveMenu('cetak-surat')}
+                            onClick={() => handleTabChange('cetak-surat')}
                             className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs shadow transition active:scale-95 cursor-pointer"
                             title="Opsional: Tidak wajib dicetak untuk melanjutkan pekerjaan"
                           >
@@ -490,7 +488,7 @@ export default function DashboardTeknisi({ defaultTab }) {
                       Belum ada tiket yang sedang Anda kerjakan. Silakan ambil tiket pekerjaan terlebih dahulu dari Pool Tiket Terbuka.
                     </p>
                     <button
-                      onClick={() => setActiveMenu('tiket')}
+                      onClick={() => handleTabChange('tiket')}
                       className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition cursor-pointer"
                     >
                       Buka Pool Tiket Pekerjaan
@@ -617,7 +615,7 @@ export default function DashboardTeknisi({ defaultTab }) {
 
                         <div className="flex gap-2 pt-1">
                           <button
-                            onClick={() => setActiveMenu('cetak-surat')}
+                            onClick={() => handleTabChange('cetak-surat')}
                             className="flex-1 py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer"
                           >
                             <Printer className="w-3.5 h-3.5" />
@@ -766,7 +764,7 @@ export default function DashboardTeknisi({ defaultTab }) {
           onClose={() => setModalTugasId(null)}
           onSuccess={() => {
             setModalTugasId(null);
-            setActiveMenu('status-approval');
+            handleTabChange('status-approval');
           }}
         />
       )}

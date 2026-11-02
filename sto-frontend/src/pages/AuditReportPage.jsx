@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 export default function AuditReportPage() {
   const navigate = useNavigate();
   const { isDark } = useTheme();
+  const { currentUser } = useApp();
   const {
     tugas,
     permohonan,
@@ -87,7 +88,16 @@ export default function AuditReportPage() {
       <div className="no-print">
         <ModernSidebar
           activeTab="laporan-kerja"
-          onTabChange={(tab) => navigate(`/dashboard-pimpinan?tab=${tab}`)}
+          onTabChange={(tab) => {
+            const role = currentUser?.role || 'pimpinan';
+            if (role === 'teknisi') {
+              navigate(`/dashboard-teknisi?tab=${tab}`);
+            } else if (role === 'gudang') {
+              navigate(`/dashboard-gudang?tab=${tab}`);
+            } else {
+              navigate(`/dashboard-pimpinan?tab=${tab}`);
+            }
+          }}
         />
       </div>
 

@@ -63,7 +63,7 @@ function DashboardPimpinan({ defaultTab }) {
   const urlTab = searchParams.get('tab');
 
   const [activeMenu, setActiveMenu] = useState(() => {
-    return defaultTab || urlTab || sessionStorage.getItem('sto_pimpinan_tab') || 'dashboard';
+    return urlTab || defaultTab || sessionStorage.getItem('sto_pimpinan_tab') || 'dashboard';
   });
   const [showCreateTaskModal, setShowCreateTaskModal] = useState(false);
   const [bastpModalTask, setBastpModalTask] = useState(null);
@@ -81,19 +81,17 @@ function DashboardPimpinan({ defaultTab }) {
 
   // Sync activeMenu with URL query params and sessionStorage
   useEffect(() => {
-    if (defaultTab) {
-      setActiveMenu(defaultTab);
-      sessionStorage.setItem('sto_pimpinan_tab', defaultTab);
-    } else if (urlTab && urlTab !== activeMenu) {
-      setActiveMenu(urlTab);
-      sessionStorage.setItem('sto_pimpinan_tab', urlTab);
+    const target = urlTab || defaultTab;
+    if (target && target !== activeMenu) {
+      setActiveMenu(target);
+      sessionStorage.setItem('sto_pimpinan_tab', target);
     }
   }, [urlTab, defaultTab]);
 
   const handleTabChange = (newTab) => {
     setActiveMenu(newTab);
     sessionStorage.setItem('sto_pimpinan_tab', newTab);
-    setSearchParams({ tab: newTab }, { replace: true });
+    navigate(`/dashboard-pimpinan?tab=${newTab}`, { replace: true });
   };
 
   // Proteksi sesi pimpinan (graceful fallback)
@@ -259,14 +257,14 @@ function DashboardPimpinan({ defaultTab }) {
 
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => setActiveMenu('tracking')}
+                        onClick={() => handleTabChange('tracking')}
                         className="px-2.5 py-1 rounded-xl bg-blue-600/15 hover:bg-blue-600/25 text-blue-400 border border-blue-500/30 text-xs font-bold flex items-center gap-1 transition cursor-pointer"
                       >
                         <MapPin className="w-3.5 h-3.5 text-blue-400" />
                         <span>Buka Peta WebGIS</span>
                       </button>
                       <button
-                        onClick={() => setActiveMenu('kelola-tugas')}
+                        onClick={() => handleTabChange('kelola-tugas')}
                         className="text-xs text-rose-500 hover:text-rose-400 font-bold flex items-center gap-1"
                       >
                         <span>Kelola Tiket</span>
@@ -355,7 +353,7 @@ function DashboardPimpinan({ defaultTab }) {
                       </h2>
                     </div>
                     <button
-                      onClick={() => setActiveMenu('laporan-gudang')}
+                      onClick={() => handleTabChange('laporan-gudang')}
                       className="text-xs text-amber-500 hover:text-amber-400 font-bold flex items-center gap-1"
                     >
                       <span>Detail</span>
@@ -380,7 +378,7 @@ function DashboardPimpinan({ defaultTab }) {
                     </div>
 
                     <button
-                      onClick={() => setActiveMenu('approval')}
+                      onClick={() => handleTabChange('approval')}
                       className="w-full mt-2 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs transition cursor-pointer"
                     >
                       Tinjau Approval Material Sekarang
@@ -399,7 +397,7 @@ function DashboardPimpinan({ defaultTab }) {
                     Daftar Tiket Tugas Lapangan Terkini
                   </h2>
                   <button
-                    onClick={() => setActiveMenu('laporan-kerja')}
+                    onClick={() => handleTabChange('laporan-kerja')}
                     className="text-xs text-rose-500 hover:text-rose-400 font-bold"
                   >
                     Lihat Semua Laporan
@@ -498,7 +496,7 @@ function DashboardPimpinan({ defaultTab }) {
           {/* TAB 2.5: TABEL INVENTARISASI ASET JARINGAN (ODP, TIANG FO, ODC) */}
           {activeMenu === 'tabel-odp' && (
             <div className="animate-in fade-in duration-200">
-              <TabelAsetJaringan onNavigateToWebGis={() => setActiveMenu('tracking')} />
+              <TabelAsetJaringan onNavigateToWebGis={() => handleTabChange('tracking')} />
             </div>
           )}
 
@@ -645,7 +643,7 @@ function DashboardPimpinan({ defaultTab }) {
           onOpenBastp={setBastpModalTask}
           onNavigateToTracking={(taskId) => {
             setSelectedTrackingTaskId(taskId);
-            setActiveMenu('tracking');
+            handleTabChange('tracking');
           }}
         />
       )}
