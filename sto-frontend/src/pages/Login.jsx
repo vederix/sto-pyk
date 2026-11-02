@@ -13,10 +13,8 @@ import {
   ArrowRight,
   Sun,
   Moon,
-  Sparkles,
   UserPlus,
   LogIn,
-  Wrench,
   Eye,
   EyeOff
 } from 'lucide-react';
@@ -201,14 +199,14 @@ export default function Login({ onTriggerSplash }) {
       isDark ? 'bg-[#0a0f1d] text-white' : 'bg-slate-50 text-slate-900'
     }`}>
       
-      {/* Interactive Canvas Particle Background with Compact Dropdown Color Switcher */}
+      {/* Interactive Canvas Particle Background */}
       <ParticleBackground
         activeColor={particleColor}
         onColorChange={(newCol) => setParticleColor(newCol)}
-        showSelector={true}
+        showSelector={false}
       />
 
-      {/* Top Left Theme & Splash Controls */}
+      {/* Top Left Theme Toggle */}
       <div className="absolute top-4 left-4 z-20 flex items-center gap-2">
         <button
           onClick={toggleTheme}
@@ -221,21 +219,6 @@ export default function Login({ onTriggerSplash }) {
         >
           {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
         </button>
-
-        {onTriggerSplash && (
-          <button
-            onClick={onTriggerSplash}
-            className={`px-3 py-2 rounded-2xl border text-xs font-semibold flex items-center gap-1.5 transition shadow-lg cursor-pointer ${
-              isDark
-                ? 'bg-slate-900/80 border-slate-700 text-rose-300 hover:bg-slate-800'
-                : 'bg-white/90 border-slate-200 text-rose-700 hover:bg-slate-100'
-            }`}
-            title="Putar Ulang Animasi Splash Screen"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-rose-500" />
-            <span>Lihat Splash</span>
-          </button>
-        )}
       </div>
 
       {/* Center Auth Card */}
@@ -378,26 +361,9 @@ export default function Login({ onTriggerSplash }) {
             </form>
           )}
 
-          {/* MODE 2: REGISTER FORM - Strictly for Field Technicians */}
+          {/* MODE 2: REGISTER FORM */}
           {authMode === 'register' && (
             <form onSubmit={handleRegister} className="space-y-3.5 animate-in fade-in duration-200">
-              {/* Role Informational Notice Card */}
-              <div className="p-3 rounded-2xl bg-blue-500/10 border border-blue-500/30">
-                <div className="flex items-start gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white shrink-0 mt-0.5">
-                    <Wrench className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-blue-600 dark:text-blue-400">
-                      Pendaftaran Khusus: Teknisi Lapangan (Field Tech)
-                    </div>
-                    <p className="text-[10px] text-slate-600 dark:text-slate-400 mt-0.5 leading-relaxed">
-                      Pendaftaran mandiri ini diperuntukkan bagi Teknisi Lapangan. Akun Pimpinan dan Petugas Gudang dikelola secara resmi & terpusat oleh Kantor Sentral STO Telkom Akses.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
               <div>
                 <label className={`block text-xs font-bold mb-1 ${isDark ? 'text-slate-300' : 'text-slate-800'}`}>
                   Nama Lengkap Teknisi

@@ -105,7 +105,7 @@ export default function BrandLogo({
           </div>
           <div className={`font-semibold tracking-wider uppercase text-slate-600 dark:text-slate-400 ${textSub} truncate flex items-center gap-1`}>
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span>FIBER OPS & COMMAND</span>
+            <span>STO PAYAKUMBUH</span>
           </div>
         </div>
       )}

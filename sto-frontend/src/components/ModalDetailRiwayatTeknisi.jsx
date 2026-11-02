@@ -80,7 +80,7 @@ export default function ModalDetailRiwayatTeknisi({
   const handleDeleteAllHistory = async () => {
     if (techTasks.length === 0) return;
 
-    if (!window.confirm(`PERINGATAN: Anda akan menghapus SELURUH ${techTasks.length} riwayat tiket tugas atas nama ${teknisi.nama_lengkap} dari database Supabase.\n\nGunakan fitur ini untuk membersihkan data testing sebelum memasukkan data riil operasional.\n\nLanjutkan?`)) {
+    if (!window.confirm(`PERINGATAN: Anda akan menghapus SELURUH ${techTasks.length} riwayat tiket tugas atas nama ${teknisi.nama_lengkap} dari database Supabase.\n\nLanjutkan?`)) {
       return;
     }
 
@@ -244,7 +244,7 @@ export default function ModalDetailRiwayatTeknisi({
                   </span>
                 </h4>
                 <p className="text-[11px] text-slate-400">
-                  Data ini tersimpan langsung di tabel <code>tugas</code> Supabase. Anda dapat menghapus data testing sebelum menggunakan data riil.
+                  Data ini tersinkronisasi langsung dengan sistem database operasional STO Telkom Akses.
                 </p>
               </div>
 

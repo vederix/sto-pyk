@@ -126,7 +126,7 @@ function DashboardPimpinan() {
             <div>
               <div className="flex items-center gap-2">
                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-600/20 text-rose-400 border border-rose-500/30">
-                  COMMAND CENTER PIMPINAN
+                  PORTAL PIMPINAN STO
                 </span>
                 <span className="text-xs text-slate-400 font-mono">STO Telkom Akses Payakumbuh (Koto Nan IV)</span>
               </div>
