@@ -351,9 +351,10 @@ export function AppProvider({ children }) {
       ? `${taskData.pelanggan_nama}${taskData.pelanggan_telp ? ' (' + taskData.pelanggan_telp + ')' : ''} - ${taskData.lokasi}${taskData.keterangan ? ' [' + taskData.keterangan + ']' : ''}`
       : taskData.lokasi;
 
+    const assignedId = taskData.id ? Number(taskData.id) : newId;
     const newTask = {
-      id: newId,
-      nomor_tiket: taskData.nomor_tiket || `TKT-PYK-2026-${String(newId).padStart(3, '0')}`,
+      id: assignedId,
+      nomor_tiket: taskData.nomor_tiket || `TKT-PYK-2026-${String(assignedId).padStart(3, '0')}`,
       pimpinan_id: currentUser ? currentUser.id : 1,
       teknisi_id: taskData.teknisi_id ? Number(taskData.teknisi_id) : null,
       jenis_kerja: taskData.jenis_kerja,
@@ -370,67 +371,64 @@ export function AppProvider({ children }) {
 
     setTugas(prev => [newTask, ...prev]);
 
-    // 1. Sync ke Express Backend API
-    try {
-      const resApi = await api.post('/tugas', {
-        pimpinan_id: Number(newTask.pimpinan_id) || 1,
-        teknisi_id: newTask.teknisi_id ? Number(newTask.teknisi_id) : null,
-        jenis_kerja: newTask.jenis_kerja,
-        lokasi: newTask.lokasi,
-        pelanggan_nama: newTask.pelanggan_nama,
-        pelanggan_telp: newTask.pelanggan_telp,
-        odp_kode: taskData.odp_kode || taskData.odp_id || 'ODP-PYK-FA/001',
-        keterangan: taskData.keterangan || ''
-      });
-      if (resApi.data?.data?.id) {
-        setTugas(prev => prev.map(t => t.id === newId ? { ...t, id: resApi.data.data.id } : t));
-      }
-    } catch (apiErr) {
-      console.warn('[createTugas] Backend notice:', apiErr.message);
-    }
-
-    // 2. Sync to Supabase tugas table strictly according to schema:
-    if (isSupabaseConfigured()) {
+    // Hanya panggil API / Supabase jika belum disinkronkan oleh komponen pemanggil (misal FormTugas)
+    if (!taskData.id) {
+      let createdViaBackend = false;
+      // 1. Sync ke Express Backend API
       try {
-        let insertPayload = {
+        const resApi = await api.post('/tugas', {
           pimpinan_id: Number(newTask.pimpinan_id) || 1,
           teknisi_id: newTask.teknisi_id ? Number(newTask.teknisi_id) : null,
           jenis_kerja: newTask.jenis_kerja,
-          lokasi: fullLokasi,
-          status: 'menunggu',
-          broadcast_status: 'sent'
-        };
-
-        if (taskData.odp_id) {
-          insertPayload.odp_id = Number(taskData.odp_id);
+          lokasi: newTask.lokasi,
+          pelanggan_nama: newTask.pelanggan_nama,
+          pelanggan_telp: newTask.pelanggan_telp,
+          odp_kode: taskData.odp_kode || taskData.odp_id || 'ODP-PYK-FA/001',
+          keterangan: taskData.keterangan || ''
+        });
+        if (resApi.data?.data?.id) {
+          createdViaBackend = true;
+          setTugas(prev => prev.map(t => t.id === assignedId ? { ...t, id: resApi.data.data.id } : t));
         }
+      } catch (apiErr) {
+        console.warn('[createTugas] Backend notice:', apiErr.message);
+      }
 
-        let { data, error } = await supabase.from('tugas').insert([insertPayload]).select();
+      // 2. Fallback direct Supabase HANYA jika backend offline
+      if (!createdViaBackend && isSupabaseConfigured()) {
+        try {
+          let insertPayload = {
+            pimpinan_id: Number(newTask.pimpinan_id) || 1,
+            teknisi_id: newTask.teknisi_id ? Number(newTask.teknisi_id) : null,
+            jenis_kerja: newTask.jenis_kerja,
+            lokasi: fullLokasi,
+            status: 'menunggu',
+            broadcast_status: 'sent'
+          };
 
-        // If schema has NOT NULL constraint on teknisi_id, fallback to first available technician
-        if (error && error.message?.toLowerCase().includes('not-null')) {
-          const techFallback = users.find(u => u.role === 'teknisi')?.id || 2;
-          insertPayload.teknisi_id = techFallback;
-          const retryRes = await supabase.from('tugas').insert([insertPayload]).select();
-          data = retryRes.data;
+          if (taskData.odp_id) {
+            insertPayload.odp_id = Number(taskData.odp_id);
+          }
+
+          let { data, error } = await supabase.from('tugas').insert([insertPayload]).select();
+
+          if (error && error.message?.toLowerCase().includes('not-null')) {
+            const techFallback = users.find(u => u.role === 'teknisi')?.id || 2;
+            insertPayload.teknisi_id = techFallback;
+            const retryRes = await supabase.from('tugas').insert([insertPayload]).select();
+            data = retryRes.data;
+          }
+
+          if (data && data.length > 0) {
+            setTugas(prev => prev.map(t => t.id === assignedId ? { ...t, id: data[0].id } : t));
+          }
+        } catch (err) {
+          console.warn('Supabase create task notice:', err);
         }
-
-        // Fallback jika odp_id kolom bermasalah
-        if (error && error.message?.toLowerCase().includes('odp_id')) {
-          delete insertPayload.odp_id;
-          const retryRes = await supabase.from('tugas').insert([insertPayload]).select();
-          data = retryRes.data;
-        }
-
-        if (data && data.length > 0) {
-          setTugas(prev => prev.map(t => t.id === newId ? { ...t, id: data[0].id } : t));
-        }
-      } catch (err) {
-        console.warn('Supabase create task notice:', err);
       }
     }
 
-    showToast(`Tiket #${newId} (${taskData.jenis_kerja}) berhasil disiarkan ke seluruh armada teknisi!`, "success");
+    showToast(`Tiket #${assignedId} (${taskData.jenis_kerja}) berhasil disiarkan ke seluruh armada teknisi!`, "success");
     return newTask;
   };
 
