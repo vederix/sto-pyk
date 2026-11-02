@@ -1,82 +1,66 @@
 # Perancangan Sistem Informasi Manajemen Teknisi dan Inventaris Gudang Berbasis WebGIS
-## STO Telkom Akses
+## STO Telkom Akses (Payakumbuh)
 
-Project Kerja Praktek (KP) — Sekolah Tinggi Teknologi Payakumbuh
+Sistem Operasional Terintegrasi: Monitoring Penugasan Lapangan, Pemetaan Aset Jaringan Fiber Optic WebGIS, Manajemen Logistik Gudang, dan Berita Acara Digital (BASTP).
 
-**Tim:** Ari Suandi Putra, Margi Pangestu, Natasya Lutfyah Ramadhan, Raihan Alhamidy, Restui Zai
+---
+
+## Akun Login Sistem (Demo & Pengujian)
+
+| Role Pengguna | Email Login | Kata Sandi | Akses Utama |
+|---|---|---|---|
+| **Pimpinan** | `pimpinan@gmail.com` | `123456` | Command Center, Disposisi Tiket, Approval Logistik, WebGIS, Audit BASTP |
+| **Teknisi** | `teknisi@gmail.com` | `123456` | Ambil Tiket Siaga, Permohonan Material, Check-in Lokasi, Closing & BASTP |
+| **Gudang** | `gudang@gmail.com` | `123456` | Master Inventaris Barang, Rilis Fisik Material (Potong Stok Otomatis) |
 
 ---
 
 ## Struktur Project
 
 ```
-Projek-Apk-STO-Pyk/
-├── sto-backend/     → Node.js (Express) + Supabase (PostgreSQL)
-└── sto-frontend/    → React (Vite) + Tailwind CSS
-```
-
-> **Penting:** Semua kode backend masuk ke folder `sto-backend/`, semua kode frontend masuk ke folder `sto-frontend/`. Jangan bikin folder baru sembarangan di root — kalau bingung, tanya dulu sebelum push.
-
----
-
-## Cara Setup di Laptop Masing-Masing
-
-### 1. Clone repo (sekali aja)
-```bash
-git clone https://github.com/NatasyaLR26/Projek-Apk-STO-Pyk.git
-cd Projek-Apk-STO-Pyk
-```
-
-### 2. Install dependency
-```bash
-cd sto-backend
-npm install
-
-cd ../sto-frontend
-npm install
-```
-
-### 3. Minta file `.env`
-File `.env` (isinya kunci Supabase) **tidak ikut ke-push** ke GitHub, demi keamanan. Minta file ini langsung ke Natasya (chat, bukan lewat GitHub), taruh di `sto-backend/.env`.
-
-### 4. Jalankan project
-Buka 2 terminal terpisah:
-
-**Terminal 1 — backend:**
-```bash
-cd sto-backend
-npm run dev
-```
-Jalan di `http://localhost:5000`
-
-**Terminal 2 — frontend:**
-```bash
-cd sto-frontend
-npm run dev
-```
-Jalan di `http://localhost:5173`
-
----
-
-## Cara Push Perubahan
-
-1. **Sebelum mulai kerja**, tarik dulu perubahan terbaru:
-```bash
-git pull origin main
-```
-
-2. **Setelah selesai kerja**, commit & push:
-```bash
-git add -A
-git commit -m "tulis di sini kamu ngerjain apa"
-git push origin main
+sto-pyk/
+├── sto-backend/     → Node.js (Express API) + Supabase (PostgreSQL Cloud)
+└── sto-frontend/    → React 19 (Vite), Tailwind CSS, Leaflet WebGIS
 ```
 
 ---
 
-## 4. Alur Kerja Operasional (SOP Sistem)
+## Cara Menjalankan Project di Lokal
 
-Berikut adalah diagram alur kerja operasional end-to-end yang mengintegrasikan Pimpinan STO, Teknisi Lapangan, Admin Gudang, Server Backend & WebGIS API, serta Supabase PostgreSQL:
+### 1. Prasyarat
+- Node.js versi 18 atau lebih baru.
+- Koneksi internet aktif untuk sinkronisasi Supabase Cloud.
+
+### 2. Instalasi Dependensi
+Jalankan perintah ini di root folder:
+```bash
+npm run install:all
+```
+*Perintah ini otomatis menginstal dependensi root, backend, dan frontend sekaligus.*
+
+### 3. Konfigurasi Environment (`.env`)
+Pastikan file `.env` telah disiapkan:
+- `sto-backend/.env` (Port, URL Supabase, Key Database)
+- `sto-frontend/.env` (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY)
+
+### 4. Menjalankan Server
+Buka 2 terminal terpisah atau jalankan script:
+
+**Terminal 1 — Backend API:**
+```bash
+npm run dev:backend
+```
+*Aktif di: `http://localhost:5000`*
+
+**Terminal 2 — Frontend UI:**
+```bash
+npm run dev:frontend
+```
+*Aktif di: `http://localhost:5173`*
+
+---
+
+## 6 Alur Kerja Operasional (SOP Sistem Telkom Akses)
 
 ```mermaid
 sequenceDiagram
@@ -87,81 +71,41 @@ sequenceDiagram
     participant Server as Server & WebGIS API
     participant DB as Supabase PostgreSQL
 
-    Pimpinan->>Server: Buat Tiket Tugas Baru (Jenis Kerja, Teknisi, Lokasi)
-    Server->>DB: INSERT into tugas & tracking_gps awal
-    Teknisi->>Server: Buka Tugas Aktif & Ajukan Permohonan Material (Formik FieldArray)
+    Pimpinan->>Server: 1. Buat Tiket Tugas Baru (Pasang Baru / Gangguan)
+    Server->>DB: INSERT into tugas (Status: Open Pool)
+    Teknisi->>Server: 2. Klaim Tiket & Ajukan Permohonan Material
     Server->>DB: INSERT into permohonan & detail_permohonan (Status: Pending)
-    Pimpinan->>Server: Otorisasi & Setujui Permohonan (Status: Approved)
+    Pimpinan->>Server: 3. Otorisasi & Setujui Permohonan (Status: Approved)
     Server->>DB: UPDATE permohonan SET status = 'Approved'
-    Gudang->>Server: Rilis Barang & Potong Stok (Status: Released)
-    Note over Server,DB: Menjalankan ACID Transaction (BEGIN ... FOR UPDATE ... COMMIT)
-    Server->>DB: UPDATE barang SET stok = stok - minta
-    Teknisi->>Server: Kirim Titik Koordinat GPS (Live Tracking)
-    Server->>DB: INSERT into tracking_gps
-    Pimpinan->>Server: Pantau Pergerakan Teknisi di Peta WebGIS Leaflet
-    Teknisi->>Server: Selesaikan Pekerjaan & Upload Foto Bukti (Status: Done)
-    Server->>DB: UPDATE tugas SET status = 'Done', foto_bukti = URL
-    Pimpinan->>Server: Cetak Laporan Audit Resmi (Format PDF Cetak Telkom)
+    Gudang->>Server: 4. Rilis Barang Fisik & Potong Stok Otomatis
+    Server->>DB: UPDATE barang SET stok = stok - minta (Status: Released)
+    Teknisi->>Server: 5. Check-in Lokasi & Pemantauan Peta WebGIS
+    Teknisi->>Server: 6. Closing Pekerjaan (Input Redaman dBm, SN ONT & Rekonsiliasi)
+    Server->>DB: UPDATE tugas SET status = 'Done' & Terbitkan BASTP Digital
 ```
-
-### Rincian Tahapan SOP:
-| No | Tahap / Aksi | Pelaku | Deskripsi Teknis |
-|:--:|---|---|---|
-| **1** | **Buat Tiket Tugas Baru** | Pimpinan STO | Pimpinan menerbitkan tiket pengerjaan (Pasang Baru / Gangguan / Maintenance) lengkap dengan lokasi pelanggan dan penugasan teknisi (atau ke pool terbuka). |
-| **2** | **Inisialisasi Database** | Server API | Server mencatat data penugasan ke tabel `tugas` dan menetapkan titik awal di `tracking_gps`. |
-| **3** | **Buka Tugas & Ajukan Material** | Teknisi Lapangan | Teknisi membuka tiket tugas miliknya dan menyusun daftar material (kabel drop core, ONT, roset, fast connector, dll.) menggunakan form dinamis. |
-| **4** | **Pencatatan Permohonan** | Server API | Data permohonan dicatat ke tabel `permohonan` dengan status `Pending` dan item ke tabel `detail_permohonan`. |
-| **5** | **Otorisasi & Approval** | Pimpinan STO | Pimpinan mengevaluasi dan memberikan otorisasi persetujuan pengeluaran logistik. |
-| **6** | **Update Status Persetujuan** | Server API | Status permohonan diperbarui di Supabase PostgreSQL menjadi `Approved`. |
-| **7** | **Rilis Barang Gudang** | Admin Gudang | Petugas gudang memverifikasi persetujuan, menyiapkan fisik barang, dan menekan konfirmasi pengeluaran material (`Released`). |
-| **8** | **ACID Transaction Stok** | Server & Database | Sistem mengeksekusi pemotongan kuantitas stok otomatis pada tabel `barang` secara atomik (`stok = stok - minta`) untuk menjamin integritas data inventaris. |
-| **9** | **Kirim Titik GPS** | Teknisi Lapangan | Perangkat teknisi secara periodik menyiarkan telemetri koordinat GPS latitude & longitude saat bergerak ke lokasi. |
-| **10** | **Perekaman Telemetri** | Server API | Server menyimpan histori jejak pergerakan teknisi ke tabel `tracking_gps`. |
-| **11** | **Live Tracking WebGIS** | Pimpinan STO | Pimpinan memantau pergerakan armada teknisi secara real-time di atas peta interaktif WebGIS berbasis Leaflet.js. |
-| **12** | **Closing & Rekonsiliasi Material** | Teknisi Lapangan | Teknisi mengisi formulir closing: Serial Number (SN ONT), ODP ID, Port, Redaman optik (OPM dBm), serta menghitung Dropcore terpasang vs sisa retur. Material resmi berstatus **TERPASANG DI PELANGGAN (CONSUMED)**. |
-| **13** | **Penerbitan BASTP Digital** | Sistem & Supabase | Sistem menerbitkan Dokumen Berita Acara Serah Terima Pekerjaan (BASTP) digital resmi lengkap dengan kop Telkom Akses, parameter teknis QC, dan tanda tangan digital. |
-| **14** | **Cetak Laporan Audit Resmi** | Pimpinan & Gudang | Pimpinan dan Bagian Gudang dapat memverifikasi audit material terpasang di lapangan dan mencetak BASTP untuk pertanggungjawaban operasional. |
 
 ---
 
-## Fitur Unggulan Terbaru
+## Fitur Utama Sistem
 
-1. **Rekonsiliasi Material Lapangan Nyata (Standar IndiHome / Telkom Akses WFM)**:
-   - Barang tidak hanya terpotong saat keluar dari rak gudang.
-   - Saat teknisi closing pekerjaan, perangkat Modem ONT (Serial Number/Barcode) dan kabel Dropcore secara resmi dinyatakan **TERPASANG DI PELANGGAN (CONSUMED)** sehingga hilang/berkurang permanen dari inventaris aktif perusahaan karena menjadi CPE pelanggan.
-   - Sisa kabel yang tidak terpakai (retur) otomatis dikembalikan ke inventaris gudang.
-   - Dilengkapi pengukuran kualitas sinyal optik (Redaman dBm standar Telkom: -16 s/d -24 dBm).
+1. **WebGIS Infrastruktur Fiber Optic (Payakumbuh)**:
+   - Pemetaan titik persebaran ODP (Optical Distribution Point) berbasis Leaflet Canvas (akselerasi hardware GPU).
+   - Indikator kapasitas port ODP (Tersedia, Hampir Penuh, Penuh, Maintenance).
 
-2. **Kustomisasi Logo Aplikasi**:
-   - Logo Telkom Akses dapat disesuaikan dengan mudah.
-   - Buka file `sto-frontend/src/components/BrandLogo.jsx`, isi variabel `DEFAULT_PLACEHOLDER_LOGO = "URL_LOGO_ANDA"` atau masukkan prop `logoUrl="URL_LOGO"`.
-   - Jika kosong atau gambar gagal dimuat, sistem otomatis menampilkan lambang vektor SVG Hexagon Fiber Shield Telkom Akses berteknologi tinggi.
+2. **Rekonsiliasi Material Lapangan & BASTP Digital**:
+   - Pencatatan pemakaian riil kabel Dropcore dan perangkat Modem ONT (Serial Number Barcode) dengan status resmi **TERPASANG DI PELANGGAN (CONSUMED)**.
+   - Sisa kabel yang tidak terpakai dapat di-retur kembali ke gudang.
+   - Penerbitan otomatis Berita Acara Serah Terima Pekerjaan (BASTP) digital yang siap dicetak.
 
-3. **Struktur Folder Bersih & Rapi**:
-   - `sto-backend/` : Server API Express.js & koneksi Supabase PostgreSQL.
-   - `sto-frontend/` : Aplikasi web React Vite, Tailwind CSS, Leaflet WebGIS.
-   - Bebas file duplikat / file dummy tidak terpakai.
+3. **Performa Ringan & Anti-Lag (Low-End Friendly)**:
+   - Dynamic Route Lazy-Loading & vendor chunking (initial JS load ~340 kB).
+   - Kompresi foto dokumentasi kamera client-side otomatis (WebP Canvas Engine max 1280px).
+   - Asynchronous storage sync & perlindungan Global Error Boundary.
 
 ---
 
 ## Tech Stack
-
-- **Backend:** Node.js, Express.js, Supabase (PostgreSQL)
-- **Frontend:** React, Vite, Tailwind CSS, React Router, Axios
-- **WebGIS:** Leaflet.js + OpenStreetMap (Payakumbuh Koto Nan IV)
-- **Database:** Supabase Cloud PostgreSQL Real-Time
-
-## Role Pengguna
-
-- **Pimpinan** — Buat & siarkan tiket tugas, approve permohonan material, pantau live tracking WebGIS, audit laporan BASTP
-- **Teknisi** — Ambil/klaim tiket dari pool terbuka, ajukan material, lacak GPS lapangan, closing pekerjaan, rekonsiliasi material & terbitkan BASTP
-- **Gudang** — Kelola inventaris master barang, rilis barang fisik ke teknisi (potong stok otomatis), audit material terpasang di pelanggan
-
-## Akun Login Real di Supabase
-
-| Role | Email | Password |
-|---|---|---|
-| Pimpinan | pimpinan@sto.co.id | 123456 |
-| Teknisi | teknisi@sto.co.id | 123456 |
-| Gudang | gudang@sto.co.id | 123456 |
-
+- **Backend**: Node.js, Express.js, Supabase JS Client, PostgreSQL Cloud
+- **Frontend**: React 19, Vite, Tailwind CSS, React Router, Lucide Icons
+- **Peta Geospasial**: Leaflet.js (PreferCanvas Mode)
+- **Database**: Supabase PostgreSQL Cloud

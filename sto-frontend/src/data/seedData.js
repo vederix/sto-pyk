@@ -3,67 +3,29 @@
 export const initialUsers = [
   {
     id: 1,
-    nama_lengkap: "Ari Pimpinan",
+    nama_lengkap: "Ir. Bambang Sudirman, M.T.",
     role: "pimpinan",
-    email: "pimpinan@sto.co.id",
+    email: "pimpinan@gmail.com",
     password: "123456",
     jabatan: "Manager STO Wilayah",
     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80"
   },
   {
     id: 2,
-    nama_lengkap: "Ari Teknisi",
+    nama_lengkap: "Teknisi Lapangan",
     role: "teknisi",
-    email: "teknisi@sto.co.id",
+    email: "teknisi@gmail.com",
     password: "123456",
     jabatan: "Teknisi Lapangan STO",
     phone: "0812-8921-3341",
     avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80"
   },
   {
-    id: 3,
-    nama_lengkap: "Ari Gudang",
-    role: "gudang",
-    email: "gudang@sto.co.id",
-    password: "123456",
-    jabatan: "Staff Logistik & Inventaris",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80"
-  },
-  {
     id: 4,
-    nama_lengkap: "Ir. Bambang Sudirman, M.T.",
-    role: "pimpinan",
-    email: "pimpinan@telkomakses.co.id",
-    password: "password123",
-    jabatan: "Senior Advisor STO",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80"
-  },
-  {
-    id: 5,
-    nama_lengkap: "Ahmad Fadli",
-    role: "teknisi",
-    email: "fadli.teknisi@telkomakses.co.id",
-    password: "password123",
-    jabatan: "Teknisi Lapangan Senior",
-    phone: "0812-8921-3341",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80"
-  },
-  {
-    id: 6,
-    nama_lengkap: "Budi Santoso",
-    role: "teknisi",
-    email: "budi.teknisi@telkomakses.co.id",
-    password: "password123",
-    jabatan: "Teknisi Lapangan Junior",
-    phone: "0813-7712-9902",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80"
-  },
-  {
-    id: 7,
-    nama_lengkap: "Siti Rahmawati",
+    nama_lengkap: "Petugas Gudang",
     role: "gudang",
-    email: "gudang@telkomakses.co.id",
-    password: "password123",
+    email: "gudang@gmail.com",
+    password: "123456",
     jabatan: "Staff Logistik & Inventaris",
     avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80"
   }
