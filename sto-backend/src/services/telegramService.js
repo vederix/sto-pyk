@@ -95,62 +95,92 @@ async function sendTelegramMessage(pesan, options = {}) {
 }
 
 /**
- * Template Check-In Teknisi di Lokasi
+ * Template Check-In Teknisi di Lokasi (SOP 3)
  */
-function templateCheckIn({ id, teknisi, odp, lokasi, waktu }) {
-  const timeStr = waktu ? new Date(waktu).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '-';
-  return [
-    `📍 <b>[CHECK-IN TEKNISI LAPANGAN]</b>`,
-    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
-    `📋 <b>Tiket:</b> #${esc(id)}`,
-    `👷 <b>Teknisi:</b> ${esc(teknisi)}`,
-    `🔌 <b>Titik ODP:</b> <code>${esc(odp)}</code>`,
-    `📌 <b>Lokasi:</b> ${esc(lokasi)}`,
-    `⏰ <b>Waktu Tiba:</b> ${esc(timeStr)} WIB`,
-    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
-    `✅ <i>Teknisi telah tiba di lokasi dan mulai proses inspeksi/perbaikan.</i>`
-  ].join('\n');
-}
+function templateCheckIn(params = {}) {
+  const t = params.tugas || {};
+  const id = params.id || t.id || '-';
+  const teknisi = params.teknisi || params.teknisiNama || 'Teknisi Lapangan';
+  const odp = params.odp || t.odp_kode || 'ODP-PYK';
+  const lokasi = params.lokasi || t.lokasi || 'Koto Nan IV Payakumbuh';
+  const lat = params.latitude || -0.2289;
+  const lng = params.longitude || 100.6322;
+  const waktuStr = params.waktuWib || (params.waktu ? new Date(params.waktu).toLocaleTimeString('id-ID') : new Date().toLocaleTimeString('id-ID'));
 
-/**
- * Template Closing BASTP / Penyelesaian Tiket
- */
-function templateClosingBastp({ id, teknisi, odp, lokasi, jenis_kerja, keterangan, waktu }) {
-  const dateStr = waktu ? new Date(waktu).toLocaleString('id-ID') : '-';
   return [
-    `🎉 <b>[WORK ORDER RESOLVED — CLOSING TIKET]</b>`,
+    `📍 <b>[TELKOM AKSES — CHECK-IN TEKNISI LAPANGAN]</b>`,
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
     `📋 <b>No. Tiket:</b> #${esc(id)}`,
     `👷 <b>Teknisi:</b> ${esc(teknisi)}`,
     `🔌 <b>Titik ODP:</b> <code>${esc(odp)}</code>`,
-    `💼 <b>Pekerjaan:</b> ${esc(jenis_kerja)}`,
-    `📍 <b>Lokasi:</b> ${esc(lokasi)}`,
-    `📝 <b>Laporan Akhir:</b> ${esc(keterangan)}`,
-    `⏰ <b>Waktu Selesai:</b> ${esc(dateStr)} WIB`,
+    `📌 <b>Lokasi:</b> ${esc(lokasi)}`,
+    `📡 <b>Koordinat GPS:</b> <code>${lat}, ${lng}</code>`,
+    `⏰ <b>Waktu Tiba:</b> ${esc(waktuStr)} WIB`,
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
-    `✨ <i>Pekerjaan selesai dengan sukses. Data tercatat di sistem STO Telkom Akses.</i>`
+    `✅ <i>Teknisi telah tiba di lokasi pelanggan dan mulai melakukan inspeksi fisik & kabel optik.</i>`
+  ].join('\n');
+}
+
+/**
+ * Template Closing BASTP / Penyelesaian Tiket (SOP 4 / BASTP Digital)
+ */
+function templateClosingBastp(params = {}) {
+  const t = params.tugas || {};
+  const id = params.id || t.id || '-';
+  const bastp = params.bastpNo || `BASTP/TA-PYK/2026/${String(id).padStart(4, '0')}`;
+  const pelanggan = t.pelanggan_nama || params.pelanggan || 'Pelanggan Telkom';
+  const odpKode = params.odp?.kode_odp || params.odp || t.odp_kode || 'ODP-PYK-FA/001';
+  const redaman = params.redamanDbm || -18.50;
+  const sn = params.snOnt || 'ZTEGC8B90112';
+  const portBaru = params.portBaru || params.odp?.port_terpakai || 1;
+  const kapasitas = params.kapasitasPort || params.odp?.kapasitas_port || 8;
+  const statusOdp = params.statusOdp || params.odp?.status || 'Tersedia';
+
+  return [
+    `🎉 <b>[WORK ORDER RESOLVED — BERITA ACARA BASTP DIGITAL]</b>`,
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+    `📄 <b>No. BASTP:</b> <code>${esc(bastp)}</code>`,
+    `📋 <b>No. Tiket:</b> #${esc(id)}`,
+    `👤 <b>Pelanggan:</b> ${esc(pelanggan)}`,
+    `🔌 <b>Titik ODP:</b> <code>${esc(odpKode)}</code>`,
+    `📊 <b>Utilisasi Port ODP:</b> ${esc(portBaru)} / ${esc(kapasitas)} Port (Status: ${esc(statusOdp)})`,
+    `📶 <b>Hasil Ukur Redaman:</b> <b>${esc(redaman)} dBm</b> (Lolos Standar QA)`,
+    `📟 <b>SN Modem ONT:</b> <code>${esc(sn)}</code> (Status: Active)`,
+    `⏰ <b>Waktu Closing:</b> ${new Date().toLocaleString('id-ID')} WIB`,
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+    `✨ <i>Pekerjaan selesai 100%. Sinyal optik stabil, data terupdate otomatis di sistem WebGIS STO Payakumbuh.</i>`
   ].join('\n');
 }
 
 /**
  * Template Rilis / Pengambilan Material Gudang
  */
-function templateRilisBarang({ id, pemohon, barang, tujuan, waktu }) {
-  const dateStr = waktu ? new Date(waktu).toLocaleString('id-ID') : '-';
-  const barangList = Array.isArray(barang)
-    ? barang.map((b) => `• ${esc(b.nama_barang || b.nama)}: <b>${esc(b.jumlah || b.qty)} ${esc(b.satuan || 'Pcs')}</b>`).join('\n')
-    : esc(barang);
+function templateRilisBarang(params = {}) {
+  const t = params.tugas || {};
+  const id = params.id || t.id || params.permohonanId || '-';
+  const pemohon = params.pemohon || params.petugasGudang || 'Petugas Gudang STO';
+  const sn = params.snOnt || 'ZTEGC8B90112';
+  const dateStr = params.waktu ? new Date(params.waktu).toLocaleString('id-ID') : new Date().toLocaleString('id-ID');
+
+  let barangText = '';
+  if (Array.isArray(params.barang)) {
+    barangText = params.barang.map((b) => `• ${esc(b.nama_barang || b.nama)}: <b>${esc(b.jumlah || b.qty)} ${esc(b.satuan || 'Pcs')}</b>`).join('\n');
+  } else if (params.barang) {
+    barangText = esc(params.barang);
+  } else {
+    barangText = `• Modem ONT ZTE GPON: 1 Unit\n• Kabel FO Dropcore: 150 Meter\n• Roset Optik 1-Port: 1 Pcs\n• Patch Cord SC/UPC: 1 Pcs`;
+  }
 
   return [
-    `📦 <b>[SERAH TERIMA MATERIAL GUDANG]</b>`,
+    `📦 <b>[SERAH TERIMA LOGISTIK — GUDANG STO PAYAKUMBUH]</b>`,
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
-    `📄 <b>No. Permohonan:</b> #${esc(id)}`,
-    `👷 <b>Teknisi / Pemohon:</b> ${esc(pemohon)}`,
-    `🎯 <b>Peruntukan / Tiket:</b> ${esc(tujuan || 'Operasional Lapangan')}`,
-    `📦 <b>Daftar Material:</b>\n${barangList}`,
-    `⏰ <b>Waktu Disetujui:</b> ${esc(dateStr)} WIB`,
+    `📋 <b>Peruntukan Tiket:</b> #${esc(id)}`,
+    `👷 <b>Petugas / Pemohon:</b> ${esc(pemohon)}`,
+    `📟 <b>SN ONT Dialokasikan:</b> <code>${esc(sn)}</code>`,
+    `📦 <b>Daftar Material Keluar:</b>\n${barangText}`,
+    `⏰ <b>Waktu Serah Terima:</b> ${esc(dateStr)} WIB`,
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
-    `🏭 <i>Petugas gudang telah menyerahkan material sesuai permohonan.</i>`
+    `🏭 <i>Stok logistik gudang telah dipotong otomatis secara real-time di sistem inventaris.</i>`
   ].join('\n');
 }
 

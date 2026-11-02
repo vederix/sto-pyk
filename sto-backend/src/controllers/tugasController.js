@@ -266,14 +266,17 @@ exports.updateTugas = async (req, res) => {
     .from('tugas')
     .update(updatePayload)
     .eq('id', parsedId)
-    .select()
-    .single();
+    .select();
 
   if (error) {
     return errorResponse(res, 500, 'Gagal memperbarui tiket tugas', error.message);
   }
 
-  return successResponse(res, 200, 'Tiket tugas berhasil diperbarui', data, { tugas: data });
+  if (!data || data.length === 0) {
+    return errorResponse(res, 404, 'Tiket tugas tidak ditemukan di database');
+  }
+
+  return successResponse(res, 200, 'Tiket tugas berhasil diperbarui', data[0], { tugas: data[0] });
 };
 
 // 4. Hapus / Batalkan Tiket Penugasan (CRUD Delete)

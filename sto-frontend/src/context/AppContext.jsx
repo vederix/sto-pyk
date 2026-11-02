@@ -459,8 +459,10 @@ export function AppProvider({ children }) {
     }
 
     // 1. Sinkronisasi ke Backend Express API jika backend berjalan
+    let claimedViaBackend = false;
     try {
       await api.patch(`/tugas/${parsedTugasId}/claim`, { teknisi_id: parsedTeknisiId });
+      claimedViaBackend = true;
     } catch (apiErr) {
       console.warn('[claimTugas] Backend Express API notice:', apiErr?.response?.data?.message || apiErr?.message);
     }
@@ -477,10 +479,8 @@ export function AppProvider({ children }) {
       return t;
     }));
 
-    // GPS link removed
-
-    // 3. Sinkronisasi langsung ke Supabase: Pastikan riwayat kerja tersimpan di tabel tugas Supabase
-    if (isSupabaseConfigured()) {
+    // 3. Sinkronisasi langsung ke Supabase HANYA jika backend offline
+    if (!claimedViaBackend && isSupabaseConfigured()) {
       try {
         const { data: updateRes, error: updateErr } = await supabase.from('tugas').update({
           teknisi_id: parsedTeknisiId,
@@ -554,6 +554,7 @@ export function AppProvider({ children }) {
     }));
 
     // 1. Sync ke Express Backend API
+    let requestedViaBackend = false;
     try {
       await api.post('/permohonan', {
         tugas_id: parsedTugasId,
@@ -563,12 +564,13 @@ export function AppProvider({ children }) {
         })),
         teknisi_nama: currentUser?.nama_lengkap || 'Teknisi Lapangan'
       });
+      requestedViaBackend = true;
     } catch (apiErr) {
       console.warn('[requestMaterial] Backend notice:', apiErr.message);
     }
 
-    // 2. Sync ke Supabase
-    if (isSupabaseConfigured()) {
+    // 2. Sync ke Supabase HANYA jika backend offline
+    if (!requestedViaBackend && isSupabaseConfigured()) {
       try {
         const { data: pData } = await supabase.from('permohonan').insert([{
           tugas_id: parsedTugasId,
@@ -602,13 +604,15 @@ export function AppProvider({ children }) {
       return p;
     }));
 
+    let approvedViaBackend = false;
     try {
       await api.patch(`/permohonan/${parsedId}/approve`);
+      approvedViaBackend = true;
     } catch (apiErr) {
       console.warn('[approveMaterial] Backend API notice:', apiErr.message);
     }
 
-    if (isSupabaseConfigured()) {
+    if (!approvedViaBackend && isSupabaseConfigured()) {
       try {
         await supabase.from('permohonan').update({ status: 'Approved' }).eq('id', parsedId);
       } catch (err) {
@@ -628,13 +632,15 @@ export function AppProvider({ children }) {
       return p;
     }));
 
+    let rejectedViaBackend = false;
     try {
       await api.patch(`/permohonan/${parsedId}/reject`, { catatan: reason });
+      rejectedViaBackend = true;
     } catch (apiErr) {
       console.warn('[rejectMaterial] Backend API notice:', apiErr.message);
     }
 
-    if (isSupabaseConfigured()) {
+    if (!rejectedViaBackend && isSupabaseConfigured()) {
       try {
         await supabase.from('permohonan').update({ status: 'Rejected' }).eq('id', parsedId);
       } catch (err) {
@@ -963,15 +969,24 @@ export function AppProvider({ children }) {
     const parsedId = parseInt(id, 10);
     setTugas(prev => prev.map(t => Number(t.id) === parsedId ? { ...t, ...updatedFields } : t));
 
+    let updatedViaBackend = false;
     try {
       await api.put(`/tugas/${parsedId}`, updatedFields);
+      updatedViaBackend = true;
     } catch (apiErr) {
       console.warn('[updateTugas] Backend API notice:', apiErr.message);
     }
 
-    if (isSupabaseConfigured()) {
+    if (!updatedViaBackend && isSupabaseConfigured()) {
       try {
-        await supabase.from('tugas').update(updatedFields).eq('id', parsedId);
+        const allowedCols = ['jenis_kerja', 'lokasi', 'status', 'teknisi_id', 'foto_bukti', 'odp_id'];
+        const cleanPayload = {};
+        for (const col of allowedCols) {
+          if (updatedFields[col] !== undefined) cleanPayload[col] = updatedFields[col];
+        }
+        if (Object.keys(cleanPayload).length > 0) {
+          await supabase.from('tugas').update(cleanPayload).eq('id', parsedId);
+        }
       } catch (err) {
         console.warn('Supabase update tugas error:', err);
       }
@@ -984,13 +999,15 @@ export function AppProvider({ children }) {
     const parsedId = parseInt(id, 10);
     setTugas(prev => prev.filter(t => Number(t.id) !== parsedId));
 
+    let deletedViaBackend = false;
     try {
       await api.delete(`/tugas/${parsedId}`);
+      deletedViaBackend = true;
     } catch (apiErr) {
       console.warn('[deleteTugas] Backend API notice:', apiErr.message);
     }
 
-    if (isSupabaseConfigured()) {
+    if (!deletedViaBackend && isSupabaseConfigured()) {
       try {
         await supabase.from('tugas').delete().eq('id', parsedId);
       } catch (err) {
