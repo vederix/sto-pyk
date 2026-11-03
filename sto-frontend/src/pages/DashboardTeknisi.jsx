@@ -46,7 +46,8 @@ export default function DashboardTeknisi({ defaultTab }) {
     permohonan,
     detailPermohonan,
     barang,
-    showToast
+    showToast,
+    sidebarCollapsed
   } = useApp();
 
   const handleDoCheckIn = (targetTask) => {
@@ -147,40 +148,41 @@ export default function DashboardTeknisi({ defaultTab }) {
       <ModernSidebar activeTab={activeMenu} onTabChange={handleTabChange} />
 
       {/* Main Content Area */}
-      <main className="flex-1 min-w-0 flex flex-col lg:pl-72 transition-all duration-300">
+      <main className={`flex-1 min-w-0 flex flex-col ${sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-72'} transition-all duration-300`}>
         <div className="p-4 sm:p-6 lg:p-8 space-y-6 flex-1 max-w-7xl w-full mx-auto">
           
-          {/* Header Banner */}
-          <div className={`p-5 sm:p-6 rounded-3xl border ${
-            isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-white border-slate-200 shadow-sm'
-          } flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors`}>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-blue-600/20 text-blue-400 border border-blue-500/30">
-                  PORTAL TEKNISI LAPANGAN
-                </span>
-                <span className="text-xs text-slate-400 font-mono">ID: TA-02981</span>
+          {/* Header Banner - Hidden on Cetak Surat because CetakSuratPermohonan has its own header */}
+          {activeMenu !== 'cetak-surat' && (
+            <div className={`p-5 sm:p-6 rounded-3xl border ${
+              isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-white border-slate-200 shadow-sm'
+            } flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors`}>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-blue-600/20 text-blue-400 border border-blue-500/30">
+                    PORTAL TEKNISI LAPANGAN
+                  </span>
+                  <span className="text-xs text-slate-400 font-mono">ID: TA-02981</span>
+                </div>
+                <h1 className={`text-xl sm:text-2xl font-black mt-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                  {activeMenu === 'tiket' && 'Tiket Tugas Lapangan'}
+                  {activeMenu === 'surat-permohonan' && 'Permohonan Material'}
+                  {activeMenu === 'status-approval' && 'Status Approval Material'}
+                  {activeMenu === 'pengerjaan' && 'Pengerjaan & BASTP'}
+                </h1>
+                <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'} mt-0.5`}>
+                  Teknisi: <strong>{user.nama_lengkap}</strong> &bull; STO Payakumbuh
+                </p>
               </div>
-              <h1 className={`text-xl sm:text-2xl font-black mt-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                {activeMenu === 'tiket' && 'Tiket Tugas Lapangan'}
-                {activeMenu === 'surat-permohonan' && 'Permohonan Material'}
-                {activeMenu === 'cetak-surat' && 'Cetak Surat Permohonan'}
-                {activeMenu === 'status-approval' && 'Status Approval Material'}
-                {activeMenu === 'pengerjaan' && 'Pengerjaan & BASTP'}
-              </h1>
-              <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'} mt-0.5`}>
-                Teknisi: <strong>{user.nama_lengkap}</strong> &bull; STO Payakumbuh
-              </p>
-            </div>
 
-            {/* Quick Status Info */}
-            <div className="flex items-center gap-2">
-              <span className="px-3.5 py-2 rounded-2xl bg-blue-600/10 border border-blue-500/30 text-blue-400 font-bold text-xs flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                <span>{myActiveTasks.length} Tiket Aktif Dikerjakan</span>
-              </span>
+              {/* Quick Status Info */}
+              <div className="flex items-center gap-2">
+                <span className="px-3.5 py-2 rounded-2xl bg-blue-600/10 border border-blue-500/30 text-blue-400 font-bold text-xs flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                  <span>{myActiveTasks.length} Tiket Aktif Dikerjakan</span>
+                </span>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* TAB 1: AMBIL TIKET / PEKERJAAN */}
           {activeMenu === 'tiket' && (

@@ -42,7 +42,8 @@ export default function GudangDashboard({ defaultTab }) {
     users,
     releaseMaterial,
     updateBarang,
-    showToast
+    showToast,
+    sidebarCollapsed
   } = useApp();
 
   const user = JSON.parse(localStorage.getItem('user')) || { id: 4, nama_lengkap: 'Siti Rahmawati', role: 'gudang' };
@@ -378,32 +379,32 @@ export default function GudangDashboard({ defaultTab }) {
       <ModernSidebar activeTab={activeMenu} onTabChange={handleTabChange} />
 
       {/* Main Content Area */}
-      <main className="flex-1 min-w-0 flex flex-col lg:pl-72 transition-all duration-300">
+      <main className={`flex-1 min-w-0 flex flex-col ${sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-72'} transition-all duration-300`}>
         <div className="p-4 sm:p-6 lg:p-8 space-y-6 flex-1 max-w-7xl w-full mx-auto">
           
-          {/* Header Banner */}
-          <div className={`p-5 sm:p-6 rounded-3xl border ${
-            isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-white border-slate-200 shadow-sm'
-          } flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors`}>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-600/20 text-amber-400 border border-amber-500/30">
-                  PORTAL GUDANG & LOGISTIK
-                </span>
-                <span className="text-xs text-slate-400 font-mono">Petugas: {user.nama_lengkap}</span>
+          {/* Header Banner - Hidden on Input Barang & Cetak Surat Jalan because they have dedicated components */}
+          {activeMenu !== 'input-barang' && activeMenu !== 'cetak-surat-jalan' && (
+            <div className={`p-5 sm:p-6 rounded-3xl border ${
+              isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-white border-slate-200 shadow-sm'
+            } flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors`}>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-600/20 text-amber-400 border border-amber-500/30">
+                    PORTAL GUDANG & LOGISTIK
+                  </span>
+                  <span className="text-xs text-slate-400 font-mono">Petugas: {user.nama_lengkap}</span>
+                </div>
+                <h1 className={`text-xl sm:text-2xl font-black mt-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                  {activeMenu === 'daftar-barang' && 'Stok & Master Inventaris'}
+                  {activeMenu === 'output-barang' && 'Output & Serah Terima Material'}
+                  {activeMenu === 'laporan-detail' && 'Katalog & Laporan Material'}
+                </h1>
+                <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'} mt-0.5`}>
+                  Pengelolaan stok inventaris dan serah terima logistik material teknisi.
+                </p>
               </div>
-              <h1 className={`text-xl sm:text-2xl font-black mt-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                {activeMenu === 'daftar-barang' && 'Stok & Master Inventaris'}
-                {activeMenu === 'output-barang' && 'Output & Serah Terima Material'}
-                {activeMenu === 'input-barang' && 'Pengadaan & Registrasi Masuk'}
-                {activeMenu === 'laporan-detail' && 'Katalog & Laporan Material'}
-                {activeMenu === 'cetak-surat-jalan' && 'Cetak Surat Jalan Material'}
-              </h1>
-              <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'} mt-0.5`}>
-                Pengelolaan stok inventaris dan serah terima logistik material teknisi.
-              </p>
             </div>
-          </div>
+          )}
 
           {/* KPI Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">

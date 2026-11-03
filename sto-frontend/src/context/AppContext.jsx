@@ -64,6 +64,25 @@ export function AppProvider({ children }) {
     return null;
   });
 
+  // Sidebar Collapsed State (Persisted in localStorage)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem('sto_sidebar_collapsed') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const toggleSidebarCollapse = useCallback(() => {
+    setSidebarCollapsed(prev => {
+      const next = !prev;
+      try {
+        localStorage.setItem('sto_sidebar_collapsed', String(next));
+      } catch { /* ignore */ }
+      return next;
+    });
+  }, []);
+
   // 3. Database Tables
   const [users, setUsers] = useState(() => {
     const saved = localStorage.getItem('sto_users');
@@ -1371,7 +1390,10 @@ export function AppProvider({ children }) {
         updateBarang,
         tambahStokBarang,
         deleteBarang,
-        resetToFactoryDefault
+        resetToFactoryDefault,
+        sidebarCollapsed,
+        setSidebarCollapsed,
+        toggleSidebarCollapse
       }}
     >
       {children}

@@ -76,7 +76,8 @@ function DashboardPimpinan({ defaultTab }) {
     tugas = [],
     permohonan = [],
     barang = [],
-    users = []
+    users = [],
+    sidebarCollapsed
   } = useApp();
 
   // Sync activeMenu with URL query params and sessionStorage
@@ -139,43 +140,38 @@ function DashboardPimpinan({ defaultTab }) {
       <ModernSidebar activeTab={activeMenu} onTabChange={handleTabChange} />
 
       {/* Main Content Area beside Sidebar */}
-      <main className="flex-1 min-w-0 flex flex-col lg:pl-72 transition-all duration-300">
+      <main className={`flex-1 min-w-0 flex flex-col ${sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-72'} transition-all duration-300`}>
         <div className="p-4 sm:p-6 lg:p-8 space-y-6 flex-1 max-w-7xl w-full mx-auto">
           
-          {/* Header Banner */}
-          <div className={`p-5 sm:p-6 rounded-3xl border ${
-            isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-white border-slate-200 shadow-sm'
-          } flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors`}>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-600/20 text-rose-400 border border-rose-500/30">
-                  PORTAL PIMPINAN STO
-                </span>
-                <span className="text-xs text-slate-400 font-mono">STO Telkom Akses Payakumbuh (Koto Nan IV)</span>
+          {/* Header Banner - Khusus Tab Ringkasan Operasional (Tab lain memiliki banner mandiri dengan aksi spesifik) */}
+          {activeMenu === 'dashboard' && (
+            <div className={`p-5 sm:p-6 rounded-3xl border ${
+              isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-white border-slate-200 shadow-sm'
+            } flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors`}>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-600/20 text-rose-400 border border-rose-500/30">
+                    PORTAL PIMPINAN STO
+                  </span>
+                  <span className="text-xs text-slate-400 font-mono">STO Telkom Akses Payakumbuh (Koto Nan IV)</span>
+                </div>
+                <h1 className={`text-xl sm:text-2xl font-black mt-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                  Ringkasan Operasional
+                </h1>
+                <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'} mt-0.5`}>
+                  Monitoring operasional lapangan dan distribusi penugasan teknisi.
+                </p>
               </div>
-              <h1 className={`text-xl sm:text-2xl font-black mt-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                {activeMenu === 'dashboard' && 'Ringkasan Operasional'}
-                {activeMenu === 'tracking' && 'Pemetaan Jaringan (WebGIS)'}
-                {activeMenu === 'tabel-odp' && 'Inventaris Aset Jaringan'}
-                {activeMenu === 'kelola-tugas' && 'Manajemen Tiket Tugas'}
-                {activeMenu === 'approval' && 'Approval Material'}
-                {activeMenu === 'laporan-kerja' && 'Laporan & Berita Acara'}
-                {activeMenu === 'laporan-gudang' && 'Laporan Stok Gudang'}
-                {activeMenu === 'kelola-pegawai' && 'Manajemen Pegawai'}
-              </h1>
-              <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'} mt-0.5`}>
-                Monitoring operasional lapangan dan distribusi penugasan teknisi.
-              </p>
-            </div>
 
-            <div className="flex items-center gap-2">
-              <span className={`px-3 py-1.5 rounded-2xl text-xs font-semibold border ${
-                isDark ? 'bg-slate-800/60 border-slate-700/60 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-600'
-              }`}>
-                {activeTechCount} Teknisi Bertugas
-              </span>
+              <div className="flex items-center gap-2">
+                <span className={`px-3 py-1.5 rounded-2xl text-xs font-semibold border ${
+                  isDark ? 'bg-slate-800/60 border-slate-700/60 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-600'
+                }`}>
+                  {activeTechCount} Teknisi Bertugas
+                </span>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* TAB 1: DASHBOARD LENGKAP */}
           {activeMenu === 'dashboard' && (

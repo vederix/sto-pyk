@@ -30,12 +30,29 @@ import {
 } from 'lucide-react';
 
 export default function ModernSidebar({ activeTab, onTabChange }) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [localCollapsed, setLocalCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const { isDark, toggleTheme } = useTheme();
-  const { currentUser, logout, permohonan, tugas, barang = [] } = useApp();
+  const {
+    currentUser,
+    logout,
+    permohonan,
+    tugas,
+    barang = [],
+    sidebarCollapsed: appCollapsed,
+    toggleSidebarCollapse
+  } = useApp();
   const navigate = useNavigate();
+
+  const collapsed = appCollapsed !== undefined ? appCollapsed : localCollapsed;
+  const handleToggleCollapse = () => {
+    if (toggleSidebarCollapse) {
+      toggleSidebarCollapse();
+    } else {
+      setLocalCollapsed(!localCollapsed);
+    }
+  };
 
   const currentRole = currentUser?.role || 'pimpinan';
 
@@ -199,22 +216,26 @@ export default function ModernSidebar({ activeTab, onTabChange }) {
         }`}
       >
         {/* Sidebar Header */}
-        <div className={`flex items-center justify-between p-4 border-b ${isDark ? 'border-slate-800/80' : 'border-slate-200'} h-16`}>
+        <div className={`flex items-center ${collapsed ? 'justify-center p-3' : 'justify-between p-4'} border-b ${isDark ? 'border-slate-800/80' : 'border-slate-200'} h-16 relative`}>
           <BrandLogo size="md" collapsed={collapsed} />
 
           {/* Collapse Button on Desktop */}
           <button
-            onClick={() => setCollapsed(!collapsed)}
-            className={`hidden lg:flex p-1.5 rounded-xl ${
-              isDark ? 'hover:bg-slate-800 text-slate-400 hover:text-white' : 'hover:bg-slate-100 text-slate-500 hover:text-black'
-            } transition`}
+            type="button"
+            onClick={handleToggleCollapse}
+            className={`hidden lg:flex transition cursor-pointer ${
+              collapsed
+                ? 'absolute -right-3 top-5 w-6 h-6 rounded-full bg-slate-900 dark:bg-slate-950 border border-slate-700 dark:border-slate-800 shadow-xl items-center justify-center text-slate-300 hover:text-white hover:border-burgundy-500 z-50 p-0 active:scale-90'
+                : `p-1.5 rounded-xl ${isDark ? 'hover:bg-slate-800 text-slate-400 hover:text-white' : 'hover:bg-slate-100 text-slate-500 hover:text-black'}`
+            }`}
             title={collapsed ? 'Perluas Sidebar' : 'Ciutkan Sidebar'}
           >
-            {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+            {collapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-4 h-4" />}
           </button>
 
           {/* Close button on Mobile */}
           <button
+            type="button"
             onClick={() => setMobileOpen(false)}
             className="lg:hidden p-1.5 rounded-xl text-slate-400 hover:text-white"
           >
@@ -223,9 +244,12 @@ export default function ModernSidebar({ activeTab, onTabChange }) {
         </div>
 
         {/* Current User Card */}
-        <div className={`p-4 border-b ${isDark ? 'border-slate-800/80 bg-slate-900/40' : 'border-slate-200 bg-slate-50/70'}`}>
-          <div className="flex items-center gap-3">
-            <div className="relative w-10 h-10 rounded-2xl bg-gradient-to-tr from-burgundy-700 to-rose-500 flex items-center justify-center font-bold text-white shadow-lg flex-shrink-0">
+        <div className={`border-b ${isDark ? 'border-slate-800/80 bg-slate-900/40' : 'border-slate-200 bg-slate-50/70'} ${collapsed ? 'p-3 flex justify-center' : 'p-4'}`}>
+          <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'}`}>
+            <div
+              className="relative w-10 h-10 rounded-2xl bg-linear-to-tr from-burgundy-700 to-rose-500 flex items-center justify-center font-bold text-white shadow-lg shrink-0 cursor-default"
+              title={collapsed ? `${currentUser?.nama_lengkap || 'Pengguna'} (${currentRole})` : undefined}
+            >
               {currentUser?.nama_lengkap?.charAt(0) || 'U'}
               <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-slate-900" />
             </div>
@@ -250,7 +274,7 @@ export default function ModernSidebar({ activeTab, onTabChange }) {
         </div>
 
         {/* Navigation Menu List */}
-        <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1.5 custom-scrollbar">
+        <div className={`flex-1 overflow-y-auto ${collapsed ? 'px-2' : 'px-3'} py-4 space-y-1.5 custom-scrollbar`}>
           {!collapsed && (
             <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-3 pb-1">
               Menu Navigasi
@@ -264,23 +288,27 @@ export default function ModernSidebar({ activeTab, onTabChange }) {
             return (
               <button
                 key={item.key}
+                type="button"
                 onClick={() => handleMenuClick(item.key)}
-                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                className={`w-full flex items-center ${collapsed ? 'justify-center px-0 py-2.5' : 'justify-between px-3.5 py-2.5'} rounded-2xl text-xs font-semibold transition-all duration-200 cursor-pointer ${
                   isActive
                     ? 'bg-burgundy-600 text-white font-bold shadow-lg shadow-burgundy-600/30 scale-[1.02]'
                     : isDark
                     ? 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
                     : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
-                } ${collapsed ? 'justify-center' : 'justify-between'}`}
+                }`}
                 title={collapsed ? item.label : undefined}
               >
-                <div className="flex items-center gap-3 min-w-0">
-                  <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} min-w-0 relative`}>
+                  <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                  {collapsed && item.badge && (
+                    <span className="absolute -top-1.5 -right-2 w-2 h-2 rounded-full bg-amber-500 ring-2 ring-slate-900" />
+                  )}
                   {!collapsed && <span className="truncate">{item.label}</span>}
                 </div>
 
                 {!collapsed && item.badge && (
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold flex-shrink-0 ${item.badgeColor || 'bg-burgundy-500 text-white'}`}>
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0 ${item.badgeColor || 'bg-burgundy-500 text-white'}`}>
                     {item.badge}
                   </span>
                 )}
@@ -291,9 +319,10 @@ export default function ModernSidebar({ activeTab, onTabChange }) {
 
         {/* Sidebar Footer Controls */}
         <div className={`p-3 border-t ${isDark ? 'border-slate-800/80 bg-slate-950/60' : 'border-slate-200 bg-slate-50/90'}`}>
-          <div className={`flex items-center ${collapsed ? 'flex-col gap-2' : 'justify-between'}`}>
+          <div className={`flex items-center ${collapsed ? 'flex-col gap-2 justify-center' : 'justify-between'}`}>
             {/* Dark / Light Toggle */}
             <button
+              type="button"
               onClick={toggleTheme}
               className={`p-2.5 rounded-xl border transition cursor-pointer ${
                 isDark
@@ -307,11 +336,12 @@ export default function ModernSidebar({ activeTab, onTabChange }) {
 
             {/* Logout Button */}
             <button
+              type="button"
               onClick={async () => {
                 await logout();
                 navigate('/login', { replace: true });
               }}
-              className={`flex items-center gap-2 px-3 py-2 rounded-xl border transition cursor-pointer ${
+              className={`flex items-center justify-center gap-2 ${collapsed ? 'p-2.5' : 'px-3 py-2'} rounded-xl border transition cursor-pointer ${
                 isDark
                   ? 'bg-rose-950/40 border-rose-900/60 text-rose-400 hover:bg-rose-900/50 hover:text-white'
                   : 'bg-rose-50 border-rose-200 text-rose-600 hover:bg-rose-100'

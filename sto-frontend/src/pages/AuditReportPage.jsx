@@ -22,7 +22,8 @@ export default function AuditReportPage() {
     permohonan,
     detailPermohonan,
     barang,
-    users
+    users,
+    sidebarCollapsed
   } = useApp();
 
   const [statusFilter, setStatusFilter] = useState('all');
@@ -101,7 +102,7 @@ export default function AuditReportPage() {
         />
       </div>
 
-      <main className="flex-1 min-w-0 lg:pl-72 transition-all duration-300">
+      <main className={`flex-1 min-w-0 ${sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-72'} transition-all duration-300`}>
         <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
         {/* Top Toolbar (Hidden when printing) */}
         <div className={`no-print flex flex-col md:flex-row md:items-center justify-between gap-4 ${isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-white border-slate-200 shadow-sm'} border p-5 rounded-2xl transition-colors`}>
