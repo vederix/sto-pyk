@@ -43,8 +43,8 @@ export default function CetakSuratPermohonan() {
             <FileText className="w-5 h-5" />
           </div>
           <div>
-            <h2 className={`text-base font-extrabold ${isDark ? 'text-white' : 'text-slate-900'}`}>Cetak Fisik Surat Permohonan Barang</h2>
-            <p className="text-xs text-slate-400">Pilih formulir permohonan untuk dicetak dan dimintakan tanda tangan pengesahan fisik Pimpinan.</p>
+            <h2 className={`text-base font-extrabold ${isDark ? 'text-white' : 'text-slate-900'}`}>Cetak Surat Permohonan Material</h2>
+            <p className="text-xs text-slate-400">Formulir permohonan material teknisi untuk pengesahan fisik Pimpinan.</p>
           </div>
         </div>
 

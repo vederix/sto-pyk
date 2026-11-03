@@ -68,10 +68,10 @@ export default function KelolaPegawai() {
             <span className="p-1.5 rounded-xl bg-burgundy-600/20 text-burgundy-500 border border-burgundy-500/30">
               <Users className="w-5 h-5" />
             </span>
-            <h1 className="text-xl font-black">Kelola Akun & Hak Akses Pegawai</h1>
+            <h1 className="text-xl font-black">Kelola Pegawai</h1>
           </div>
           <p className={`text-xs mt-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-            Pimpinan dapat mendaftarkan akun baru, mengatur role (Teknisi / Gudang / Pimpinan), dan memantau status staf di STO Payakumbuh.
+            Manajemen akun, hak akses role, dan direktori staf STO Payakumbuh.
           </p>
         </div>
 
@@ -80,7 +80,7 @@ export default function KelolaPegawai() {
           className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-burgundy-600 hover:bg-burgundy-700 text-white font-bold text-xs shadow-lg shadow-burgundy-600/30 transition cursor-pointer active:scale-95 whitespace-nowrap"
         >
           <UserPlus className="w-4 h-4" />
-          <span>Tambah Akun Pegawai</span>
+          <span>Tambah Pegawai</span>
         </button>
       </div>
 

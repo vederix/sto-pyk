@@ -111,21 +111,21 @@ export default function AuditReportPage() {
                 <FileText className="w-5 h-5" />
               </span>
               <h1 className={`text-xl sm:text-2xl font-extrabold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                Laporan Audit Kerja & Evaluasi Lapangan
+                Laporan Audit Lapangan
               </h1>
             </div>
             <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'} mt-1`}>
-              Rekapitulasi resmi berita acara penanganan tiket, material logistik terpakai, dan dokumentasi foto STO Telkom Akses.
+              Rekapitulasi berita acara tiket, alokasi material, dan dokumentasi foto.
             </p>
           </div>
 
           <div className="flex items-center gap-3">
             <button
               onClick={handlePrint}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-burgundy-600 hover:bg-burgundy-700 active:scale-95 text-white font-bold text-xs shadow-lg shadow-burgundy-600/30 transition"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-burgundy-600 hover:bg-burgundy-700 active:scale-95 text-white font-bold text-xs shadow-lg shadow-burgundy-600/30 transition cursor-pointer"
             >
               <Printer className="w-4 h-4" />
-              <span>Cetak Berita Acara (Print)</span>
+              <span>Cetak Laporan</span>
             </button>
           </div>
         </div>
@@ -134,9 +134,8 @@ export default function AuditReportPage() {
         <div className="no-print grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className={`${isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-white border-slate-200 shadow-sm'} border rounded-xl p-4 flex items-center justify-between`}>
             <div>
-              <div className="text-[11px] text-emerald-500 font-semibold uppercase">Tiket Selesai (Done)</div>
+              <div className="text-[11px] text-emerald-500 font-semibold uppercase">Tiket Selesai</div>
               <div className="text-2xl font-extrabold text-emerald-500 mt-1">{completedCount}</div>
-              <div className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'} mt-0.5`}>Tervalidasi dokumentasi foto</div>
             </div>
             <div className="w-10 h-10 rounded-xl bg-emerald-600/20 text-emerald-500 border border-emerald-500/30 flex items-center justify-center">
               <CheckCircle2 className="w-5 h-5" />
@@ -147,7 +146,6 @@ export default function AuditReportPage() {
             <div>
               <div className="text-[11px] text-blue-500 font-semibold uppercase">Sedang Dikerjakan</div>
               <div className="text-2xl font-extrabold text-blue-500 mt-1">{inProgressCount}</div>
-              <div className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'} mt-0.5`}>Teknisi aktif di lapangan</div>
             </div>
             <div className="w-10 h-10 rounded-xl bg-blue-600/20 text-blue-500 border border-blue-500/30 flex items-center justify-center">
               <Wrench className="w-5 h-5" />
@@ -156,9 +154,8 @@ export default function AuditReportPage() {
 
           <div className={`${isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-white border-slate-200 shadow-sm'} border rounded-xl p-4 flex items-center justify-between`}>
             <div>
-              <div className="text-[11px] text-amber-500 font-semibold uppercase">Log Alokasi Material</div>
+              <div className="text-[11px] text-amber-500 font-semibold uppercase">Material Terpakai</div>
               <div className="text-2xl font-extrabold text-amber-500 mt-1">{totalMaterialsUsed} Item</div>
-              <div className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'} mt-0.5`}>Dirilis gudang resmi</div>
             </div>
             <div className="w-10 h-10 rounded-xl bg-amber-600/20 text-amber-500 border border-amber-500/30 flex items-center justify-center">
               <Package className="w-5 h-5" />

@@ -174,7 +174,7 @@ export default function TiketDetailPage() {
               isProgress ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' :
               'bg-amber-500/20 text-amber-400 border-amber-500/30'
             }`}>
-              {isDone ? '✅ Selesai (Closed)' : isProgress ? '⚡ In-Progress' : '📢 Open Pool (Siaga)'}
+              {isDone ? 'Selesai' : isProgress ? 'Progress' : 'Open Pool'}
             </span>
           </div>
         </div>
@@ -185,7 +185,7 @@ export default function TiketDetailPage() {
             <CheckCircle className="w-5 h-5 shrink-0 mt-0.5 text-emerald-400" />
             <div className="text-xs space-y-1">
               <strong className="font-extrabold block text-sm">Tiket Berhasil Anda Ambil!</strong>
-              <p>Tiket ini telah resmi ditugaskan ke Anda. Langkah selanjutnya: Silakan ajukan kebutuhan material ke Petugas Gudang STO.</p>
+              <p>Tiket telah resmi ditugaskan ke Anda. Silakan ajukan material ke gudang bila diperlukan.</p>
             </div>
           </div>
         )}
@@ -203,10 +203,10 @@ export default function TiketDetailPage() {
                 TELKOM AKSES — NOC STO PAYAKUMBUH
               </div>
               <h1 className="text-xl sm:text-2xl font-black tracking-tight">
-                Work Order / Tiket Penugasan Lapangan
+                Detail Tiket Penugasan
               </h1>
               <p className={`text-xs mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                Perintah kerja teknisi lapangan dan dasar permohonan logistik material gudang STO.
+                Rincian penugasan teknisi dan data teknis lapangan.
               </p>
             </div>
 
@@ -287,38 +287,38 @@ export default function TiketDetailPage() {
                 type="button"
                 onClick={handleClaim}
                 disabled={claiming}
-                className="w-full py-4 px-6 rounded-2xl bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-sm shadow-xl shadow-blue-900/40 transition active:scale-98 cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full py-3.5 px-6 rounded-2xl bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-sm shadow-xl shadow-blue-900/40 transition active:scale-98 cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
               >
-                <span>{claiming ? '⏳ Mengambil Tiket...' : '✋ Ambil Tiket Ini (Klaim Pekerjaan Sekarang)'}</span>
+                <span>{claiming ? 'Mengambil Tiket...' : 'Ambil Tiket'}</span>
               </button>
             ) : isProgress ? (
               <div className="space-y-3">
                 <div className="p-3.5 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-400 flex items-center justify-between">
-                  <span>👷 Tiket sedang dikerjakan oleh <strong>{assignedTechName}</strong></span>
+                  <span>Dikerjakan oleh <strong>{assignedTechName}</strong></span>
                   <span className="font-bold">IN-PROGRESS</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <button
                     onClick={() => navigate('/dashboard-teknisi')}
-                    className="py-3 px-4 rounded-xl bg-linear-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-2 cursor-pointer"
+                    className="py-2.5 px-4 rounded-xl bg-linear-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <Package className="w-4 h-4" />
-                    <span>📦 Ajukan Material Gudang</span>
+                    <span>Ajukan Material</span>
                   </button>
 
                   <button
                     onClick={() => navigate('/dashboard-teknisi')}
-                    className="py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition flex items-center justify-center gap-2 cursor-pointer"
+                    className="py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <span>Buka Dashboard Teknisi</span>
+                    <span>Dashboard Teknisi</span>
                     <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="p-4 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-center text-xs font-bold">
-                Tiket ini telah selesai dikerjakan 100% dan Berita Acara BASTP Digital telah diterbitkan.
+              <div className="p-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-center text-xs font-bold">
+                Tiket selesai. BASTP Digital telah diterbitkan.
               </div>
             )}
           </div>

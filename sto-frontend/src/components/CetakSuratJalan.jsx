@@ -35,8 +35,8 @@ export default function CetakSuratJalan() {
             <FileCheck className="w-5 h-5" />
           </div>
           <div>
-            <h2 className={`text-base font-extrabold ${isDark ? 'text-white' : 'text-slate-900'}`}>Cetak Surat Jalan & Bukti Serah Terima Material</h2>
-            <p className="text-xs text-slate-400">Dokumen resmi pengeluaran barang fisik dari gudang logistik ke teknisi lapangan.</p>
+            <h2 className={`text-base font-extrabold ${isDark ? 'text-white' : 'text-slate-900'}`}>Cetak Surat Jalan Material</h2>
+            <p className="text-xs text-slate-400">Dokumen serah terima pengeluaran barang dari gudang ke teknisi.</p>
           </div>
         </div>
 

@@ -191,13 +191,13 @@ export default function InputBarangGudang() {
           </span>
           <div>
             <h2 className={`text-lg font-extrabold ${isDark ? 'text-white' : 'text-slate-900'} flex items-center gap-2`}>
-              <span>Input Pengadaan Barang Masuk Gudang</span>
+              <span>Pengadaan Barang Masuk</span>
               <span className="px-2.5 py-0.5 rounded-full text-[10px] bg-emerald-500/20 text-emerald-400 font-mono border border-emerald-500/30">
                 Logistik STO
               </span>
             </h2>
             <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-              Input stok barang baru. Kolom Serial Number (SN) <strong>hanya aktif untuk perangkat ONT / Modem</strong>, sedangkan kabel sling, roset, dan aksesoris lainnya langsung input jumlah fisik.
+              Registrasi pengadaan material baru dan barcode Serial Number (SN) ONT.
             </p>
           </div>
         </div>
@@ -206,7 +206,7 @@ export default function InputBarangGudang() {
         <div className="mb-5 space-y-2">
           <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400">
             <Tag className="w-3.5 h-3.5" />
-            <span>Pilihan Cepat Material STO:</span>
+            <span>Pilihan Cepat Material:</span>
           </div>
           <div className="flex flex-wrap gap-2">
             {materialPresets.map(preset => {
