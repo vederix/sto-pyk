@@ -93,7 +93,7 @@ function RequestBarangModal({ tugasId, onClose, onSuccess }) {
               <Package className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-sm font-extrabold">Ajukan Material ke Gudang (SOP 2)</h2>
+              <h2 className="text-sm font-extrabold">Ajukan Material ke Gudang</h2>
               <p className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Tiket Tugas #{tugasId}</p>
             </div>
           </div>

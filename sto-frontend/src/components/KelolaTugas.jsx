@@ -17,9 +17,13 @@ export default function KelolaTugas({ onOpenCreateModal, onOpenBastp }) {
   const {
     tugas = [],
     users = [],
+    currentUser,
     updateTugas,
     deleteTugas
   } = useApp();
+
+  const userRole = currentUser?.role || (JSON.parse(localStorage.getItem('user') || '{}')?.role);
+  const canCreateTask = (userRole === 'pimpinan' || userRole === 'admin' || userRole === 'dispatcher') && !!onOpenCreateModal;
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -102,20 +106,22 @@ export default function KelolaTugas({ onOpenCreateModal, onOpenBastp }) {
             <span className="p-1.5 rounded-xl bg-blue-600/20 text-blue-500 border border-blue-500/30">
               <ClipboardList className="w-5 h-5" />
             </span>
-            <h1 className="text-xl font-extrabold">Manajemen Penugasan Lapangan (CRUD Tiket)</h1>
+            <h1 className="text-xl font-extrabold">Manajemen Tiket Tugas</h1>
           </div>
           <p className={`text-xs mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-            Pengelolaan menyeluruh tiket kerja teknisi STO Payakumbuh: penugasan, perubahan data, dan pembatalan tiket.
+            Daftar penugasan teknisi dan distribusi tiket kerja operasional.
           </p>
         </div>
 
-        <button
-          onClick={onOpenCreateModal}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-lg shadow-blue-600/30 transition cursor-pointer active:scale-95 whitespace-nowrap"
-        >
-          <PlusCircle className="w-4 h-4" />
-          <span>Buat Tiket Baru (SOP 1)</span>
-        </button>
+        {canCreateTask && (
+          <button
+            onClick={onOpenCreateModal}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-lg shadow-rose-600/30 transition cursor-pointer active:scale-95 whitespace-nowrap"
+          >
+            <PlusCircle className="w-4 h-4" />
+            <span>+ Buat Tiket Baru</span>
+          </button>
+        )}
       </div>
 
       {/* Filter and Search Bar */}

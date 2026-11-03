@@ -78,10 +78,10 @@ function ApprovalMaterial() {
             <span className="p-1.5 rounded-xl bg-amber-500/20 text-amber-500 border border-amber-500/30">
               <ShieldCheck className="w-5 h-5" />
             </span>
-            <span>Approval Permohonan Material (SOP 3)</span>
+            <span>Approval Permohonan Material</span>
           </h1>
           <p className={`text-xs mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-            Pimpinan memverifikasi kebutuhan suku cadang & perangkat yang diajukan teknisi sebelum dirilis oleh logistik gudang.
+            Verifikasi permohonan material teknisi sebelum serah terima gudang.
           </p>
         </div>
 

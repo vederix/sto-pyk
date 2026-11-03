@@ -460,7 +460,7 @@ export default function UploadBuktiModal({ tugasId, onClose, onSuccess }) {
                     </p>
                   </div>
                   <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">
-                    SOP Logistik Telkom
+                    Logistik Material
                   </span>
                 </div>
 

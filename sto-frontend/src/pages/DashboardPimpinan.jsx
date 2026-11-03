@@ -154,28 +154,26 @@ function DashboardPimpinan({ defaultTab }) {
                 <span className="text-xs text-slate-400 font-mono">STO Telkom Akses Payakumbuh (Koto Nan IV)</span>
               </div>
               <h1 className={`text-xl sm:text-2xl font-black mt-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                {activeMenu === 'dashboard' && 'Dashboard Ringkasan Operasional STO'}
-                {activeMenu === 'tracking' && 'WebGIS Pemetaan Titik ODP & Aset Fiber Optic'}
-                {activeMenu === 'tabel-odp' && 'Tabel Inventarisasi Aset Jaringan (ODP, Tiang FO & ODC)'}
-                {activeMenu === 'kelola-tugas' && 'Manajemen & CRUD Tiket Penugasan Lapangan'}
-                {activeMenu === 'approval' && 'Persetujuan (Approval) Material Teknisi'}
-                {activeMenu === 'laporan-kerja' && 'Laporan Audit & Berita Acara Pekerjaan Lapangan'}
-                {activeMenu === 'laporan-gudang' && 'Laporan & Pengawasan Stok Material Gudang'}
-                {activeMenu === 'kelola-pegawai' && 'Kelola Akun & Hak Akses Pegawai STO'}
+                {activeMenu === 'dashboard' && 'Ringkasan Operasional'}
+                {activeMenu === 'tracking' && 'Pemetaan Jaringan (WebGIS)'}
+                {activeMenu === 'tabel-odp' && 'Inventaris Aset Jaringan'}
+                {activeMenu === 'kelola-tugas' && 'Manajemen Tiket Tugas'}
+                {activeMenu === 'approval' && 'Approval Material'}
+                {activeMenu === 'laporan-kerja' && 'Laporan & Berita Acara'}
+                {activeMenu === 'laporan-gudang' && 'Laporan Stok Gudang'}
+                {activeMenu === 'kelola-pegawai' && 'Manajemen Pegawai'}
               </h1>
               <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'} mt-0.5`}>
-                Sistem Koordinasi Penugasan Teknisi, Verifikasi Logistik Gudang, dan Berita Acara Digital.
+                Monitoring operasional lapangan dan distribusi penugasan teknisi.
               </p>
             </div>
 
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setShowCreateTaskModal(true)}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-lg shadow-rose-600/30 transition cursor-pointer active:scale-95 whitespace-nowrap"
-              >
-                <PlusCircle className="w-4 h-4" />
-                <span>Buat Tiket Baru (SOP 1)</span>
-              </button>
+            <div className="flex items-center gap-2">
+              <span className={`px-3 py-1.5 rounded-2xl text-xs font-semibold border ${
+                isDark ? 'bg-slate-800/60 border-slate-700/60 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-600'
+              }`}>
+                {activeTechCount} Teknisi Bertugas
+              </span>
             </div>
           </div>
 
@@ -603,7 +601,7 @@ function DashboardPimpinan({ defaultTab }) {
         </div>
       </main>
 
-      {/* Modal: Buat Tiket Tugas Baru (SOP 1) */}
+      {/* Modal: Buat Tiket Tugas Baru */}
       {showCreateTaskModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in">
           <div className={`w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl p-6 ${
@@ -612,7 +610,7 @@ function DashboardPimpinan({ defaultTab }) {
             <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800 mb-4">
               <h3 className="font-bold text-base flex items-center gap-2">
                 <PlusCircle className="w-5 h-5 text-rose-500" />
-                Buat & Siarkan Tiket Kerja (SOP 1)
+                Buat Tiket Kerja Baru
               </h3>
               <button
                 onClick={() => setShowCreateTaskModal(false)}

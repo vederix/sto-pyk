@@ -162,14 +162,14 @@ export default function DashboardTeknisi({ defaultTab }) {
                 <span className="text-xs text-slate-400 font-mono">ID: TA-02981</span>
               </div>
               <h1 className={`text-xl sm:text-2xl font-black mt-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                {activeMenu === 'tiket' && 'Daftar Tiket Tugas & Penugasan Lapangan'}
-                {activeMenu === 'surat-permohonan' && 'Form Pembuatan Surat Permohonan Barang'}
-                {activeMenu === 'cetak-surat' && 'Cetak Fisik Surat Permohonan Pengambilan Barang'}
-                {activeMenu === 'status-approval' && 'Status Persetujuan Pimpinan & Pengambilan Gudang'}
-                {activeMenu === 'pengerjaan' && 'Pengerjaan Lapangan, Pengukuran OPM & BASTP'}
+                {activeMenu === 'tiket' && 'Tiket Tugas Lapangan'}
+                {activeMenu === 'surat-permohonan' && 'Permohonan Material'}
+                {activeMenu === 'cetak-surat' && 'Cetak Surat Permohonan'}
+                {activeMenu === 'status-approval' && 'Status Approval Material'}
+                {activeMenu === 'pengerjaan' && 'Pengerjaan & BASTP'}
               </h1>
               <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'} mt-0.5`}>
-                Petugas: <strong>{user.nama_lengkap}</strong> | Unit: Fiber Optic Maintenance & Provisioning.
+                Teknisi: <strong>{user.nama_lengkap}</strong> &bull; STO Payakumbuh
               </p>
             </div>
 
@@ -194,10 +194,10 @@ export default function DashboardTeknisi({ defaultTab }) {
                       <span className="p-1.5 rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30">
                         📢
                       </span>
-                      <span>Siaran Tiket Terbuka (Pool Pekerjaan Siap Diambil)</span>
+                      <span>Siaran Tiket Terbuka</span>
                     </h2>
                     <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                      Tiket kerja yang baru saja diumumkan Pimpinan STO. Klik <strong>Ambil Pekerjaan Ini</strong> untuk menugaskan ke diri Anda.
+                      Daftar tiket yang tersedia dan siap diklaim oleh teknisi siaga.
                     </p>
                   </div>
                   <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 self-start sm:self-auto">
@@ -290,10 +290,10 @@ export default function DashboardTeknisi({ defaultTab }) {
                       <span className="p-1.5 rounded-xl bg-amber-600/20 text-amber-400 border border-amber-500/30">
                         <Wrench className="w-4 h-4" />
                       </span>
-                      <span>Tiket Aktif yang Sedang Saya Tangani</span>
+                      <span>Tiket Aktif Saya</span>
                     </h2>
                     <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                      Lanjutkan SOP: Ajukan material ke gudang, cetak formulir fisik, aktifkan pelacakan GPS, dan upload bukti selesai.
+                      Ajukan material, check-in di lokasi pelanggan, dan selesaikan pekerjaan.
                     </p>
                   </div>
                   <span className="px-3 py-1 rounded-full text-xs font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30 self-start sm:self-auto">
@@ -351,58 +351,58 @@ export default function DashboardTeknisi({ defaultTab }) {
                           </div>
                         </div>
 
-                        {/* SOP Step Actions */}
+                        {/* Aksi Pekerjaan */}
                         <div className="grid grid-cols-2 gap-2 pt-1">
                           <button
                             onClick={() => setModalTugasId(t.id)}
                             className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow transition active:scale-95 cursor-pointer"
                           >
                             <Package className="w-3.5 h-3.5" />
-                            <span>1. Ajukan Material</span>
+                            <span>Ajukan Material</span>
                           </button>
 
                           <button
                             onClick={() => handleTabChange('cetak-surat')}
                             className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs shadow transition active:scale-95 cursor-pointer"
-                            title="Opsional: Tidak wajib dicetak untuk melanjutkan pekerjaan"
+                            title="Opsional: Cetak fisik surat jalan"
                           >
                             <Printer className="w-3.5 h-3.5 text-slate-400" />
-                            <span>2. Cetak Fisik (Opsional)</span>
+                            <span>Cetak Surat</span>
                           </button>
 
-                          {/* 3. Check-In di Lokasi Pelanggan (Mandatory) */}
+                          {/* Check-In di Lokasi */}
                           {t.checkin?.verified ? (
                             <div className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold text-xs">
                               <CheckCircle2 className="w-3.5 h-3.5" />
-                              <span>✓ Checked-In ({t.checkin?.time || 'Di Lokasi'})</span>
+                              <span>Checked-In ({t.checkin?.time || 'Di Lokasi'})</span>
                             </div>
                           ) : (
                             <button
                               onClick={() => handleDoCheckIn(t)}
                               className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow transition active:scale-95 cursor-pointer"
                             >
-                              <MapPin className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
-                              <span>3. Check-In di Lokasi</span>
+                              <MapPin className="w-3.5 h-3.5 text-amber-300" />
+                              <span>Check-In Lokasi</span>
                             </button>
                           )}
 
-                          {/* 4. Upload Bukti & Closing (Wajib Check-In dulu) */}
+                          {/* Upload Bukti & Closing */}
                           {t.checkin?.verified ? (
                             <button
                               onClick={() => setUploadTugasId(t.id)}
                               className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow transition active:scale-95 cursor-pointer"
                             >
                               <Camera className="w-3.5 h-3.5" />
-                              <span>4. Closing & BASTP</span>
+                              <span>Closing & BASTP</span>
                             </button>
                           ) : (
                             <button
-                              onClick={() => showToast('Wajib tekan "Check-In di Lokasi" terlebih dahulu sebelum melakukan closing!', 'warning')}
+                              onClick={() => showToast('Wajib lakukan Check-In di lokasi terlebih dahulu sebelum closing!', 'warning')}
                               className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-800 text-slate-400 font-bold text-xs border border-slate-700 cursor-not-allowed opacity-80"
                               title="Wajib Check-In di Lokasi terlebih dahulu"
                             >
                               <Lock className="w-3.5 h-3.5 text-amber-400" />
-                              <span>4. Closing (Wajib Check-In)</span>
+                              <span>Closing (Perlu Check-In)</span>
                             </button>
                           )}
                         </div>
@@ -633,32 +633,32 @@ export default function DashboardTeknisi({ defaultTab }) {
           {/* TAB 5: PENGERJAAN LAPANGAN & UPLOAD BUKTI SELESAI */}
           {activeMenu === 'pengerjaan' && (
             <div className="space-y-6 animate-in fade-in duration-200">
-              {/* SOP 6 Closing & QA Standard Banner */}
-              <div className={`p-6 rounded-3xl border ${
+              {/* Closing & QA Standard Banner */}
+              <div className={`p-5 rounded-2xl border ${
                 isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-white border-slate-200 shadow-sm'
-              } space-y-3`}>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="p-1.5 rounded-xl bg-purple-500/20 text-purple-400 border border-purple-500/30">
-                      <Camera className="w-5 h-5" />
-                    </span>
-                    <h2 className={`text-base font-extrabold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                      Prosedur Closing & Serah Terima Hasil Pekerjaan (SOP 6)
-                    </h2>
-                  </div>
-                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                    Standar Telkom Akses
+              } flex flex-col sm:flex-row sm:items-center justify-between gap-3`}>
+                <div className="flex items-center gap-2.5">
+                  <span className="p-1.5 rounded-xl bg-purple-500/20 text-purple-400 border border-purple-500/30">
+                    <Camera className="w-4 h-4" />
                   </span>
+                  <div>
+                    <h2 className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                      Closing & Serah Terima Hasil Pekerjaan
+                    </h2>
+                    <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'} mt-0.5`}>
+                      Input hasil ukur redaman OPM, Serial Number ONT, dan foto bukti untuk penerbitan BASTP.
+                    </p>
+                  </div>
                 </div>
-                <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                  Pastikan setiap penutupan tiket telah melalui pengukuran redaman kabel optik (OPM dBm), pencatatan Serial Number ONT modem, dan upload foto bukti lapangan untuk penerbitan dokumen BASTP resmi.
-                </p>
+                <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 self-start sm:self-auto shrink-0">
+                  Validasi BASTP
+                </span>
               </div>
 
               {/* Work Orders to Finish */}
               <div className="space-y-4">
                 <h2 className={`text-base font-extrabold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                  Unggah Foto Bukti & Selesaikan Pekerjaan (SOP 6)
+                  Daftar Pekerjaan Lapangan
                 </h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -757,7 +757,7 @@ export default function DashboardTeknisi({ defaultTab }) {
         </div>
       </main>
 
-      {/* Modal: Request Barang (SOP 2) */}
+      {/* Modal: Request Barang */}
       {modalTugasId && (
         <RequestBarangModal
           tugasId={modalTugasId}
@@ -769,7 +769,7 @@ export default function DashboardTeknisi({ defaultTab }) {
         />
       )}
 
-      {/* Modal: Upload Bukti Selesai (SOP 6) */}
+      {/* Modal: Upload Bukti Selesai & Closing */}
       {uploadTugasId && (
         <UploadBuktiModal
           tugasId={uploadTugasId}

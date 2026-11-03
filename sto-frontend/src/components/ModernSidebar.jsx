@@ -51,31 +51,31 @@ export default function ModernSidebar({ activeTab, onTabChange }) {
         return [
           {
             key: 'tiket',
-            label: 'Ambil Tiket / Pekerjaan',
+            label: 'Tiket Lapangan',
             icon: ClipboardList,
             badge: assignedTechTickets > 0 ? assignedTechTickets : null,
             badgeColor: 'bg-blue-500 text-white'
           },
           {
             key: 'surat-permohonan',
-            label: 'Surat Permohonan Barang',
+            label: 'Permohonan Material',
             icon: FilePlus2
           },
           {
             key: 'cetak-surat',
-            label: 'Cetak Fisik Surat Permohonan',
+            label: 'Cetak Permohonan',
             icon: Printer
           },
           {
             key: 'status-approval',
-            label: 'Status Persetujuan Pimpinan',
+            label: 'Status Approval',
             icon: Clock,
             badge: approvedForReleaseCount > 0 ? 'Siap Ambil' : null,
             badgeColor: 'bg-emerald-500 text-white'
           },
           {
             key: 'pengerjaan',
-            label: 'Pengerjaan & Bukti Selesai',
+            label: 'Pengerjaan & BASTP',
             icon: Camera
           }
         ];
@@ -84,26 +84,26 @@ export default function ModernSidebar({ activeTab, onTabChange }) {
         return [
           {
             key: 'daftar-barang',
-            label: 'Daftar Stok Barang Gudang',
+            label: 'Stok Material',
             icon: Boxes,
             badge: barang.length > 0 ? `${barang.length} Item` : null,
             badgeColor: 'bg-emerald-500 text-white'
           },
           {
             key: 'output-barang',
-            label: 'Output Barang (Rilis / Serah Terima)',
+            label: 'Output & Rilis',
             icon: Send,
             badge: approvedForReleaseCount > 0 ? approvedForReleaseCount : null,
             badgeColor: 'bg-amber-500 text-white'
           },
           {
             key: 'input-barang',
-            label: 'Input Barang (Pengadaan Masuk)',
+            label: 'Pengadaan Masuk',
             icon: PlusCircle
           },
           {
             key: 'cetak-surat-jalan',
-            label: 'Cetak Surat Jalan Material',
+            label: 'Surat Jalan',
             icon: FileCheck
           }
         ];
@@ -113,44 +113,44 @@ export default function ModernSidebar({ activeTab, onTabChange }) {
         return [
           {
             key: 'dashboard',
-            label: 'Dashboard Lengkap',
+            label: 'Ringkasan Dashboard',
             icon: LayoutDashboard
           },
           {
             key: 'tracking',
-            label: 'WebGIS Pemetaan ODP',
+            label: 'WebGIS Pemetaan',
             icon: MapPin
           },
           {
             key: 'tabel-odp',
-            label: 'Tabel ODP, Tiang & ODC',
+            label: 'Inventaris Jaringan',
             icon: Network
           },
           {
             key: 'kelola-tugas',
-            label: 'Manajemen Tiket Tugas',
+            label: 'Manajemen Tiket',
             icon: ClipboardList
           },
           {
             key: 'approval',
-            label: 'Permohonan dari Teknisi',
+            label: 'Approval Material',
             icon: CheckCircle2,
             badge: pendingApprovalCount > 0 ? pendingApprovalCount : null,
             badgeColor: 'bg-amber-500 text-white'
           },
           {
             key: 'laporan-kerja',
-            label: 'Laporan Kerja Lapangan',
+            label: 'Laporan Lapangan',
             icon: FileText
           },
           {
             key: 'laporan-gudang',
-            label: 'Laporan Barang dari Gudang',
+            label: 'Laporan Gudang',
             icon: Package
           },
           {
             key: 'kelola-pegawai',
-            label: 'Kelola Akun & Pegawai',
+            label: 'Kelola Pegawai',
             icon: Users
           }
         ];

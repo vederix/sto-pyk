@@ -40,28 +40,24 @@ export default function AnalyticsChartsPimpinan({ tugas = [], barang = [] }) {
   const taskCategories = [
     {
       label: 'Pasang Baru',
-      desc: 'Instalasi IndiHome Baru',
       count: tugas.filter(t => t.jenis_kerja?.toLowerCase().includes('pasang')).length,
       color: 'from-blue-600 to-cyan-500',
       barBg: 'bg-blue-500'
     },
     {
-      label: 'Gangguan (Repair)',
-      desc: 'Assurance & Tiket Putus',
+      label: 'Gangguan',
       count: tugas.filter(t => t.jenis_kerja?.toLowerCase().includes('gangguan') || t.jenis_kerja?.toLowerCase().includes('repair')).length,
       color: 'from-burgundy-600 to-rose-500',
       barBg: 'bg-burgundy-600'
     },
     {
-      label: 'Maintenance ODP',
-      desc: 'Redaman & Feeder Optik',
+      label: 'Maintenance',
       count: tugas.filter(t => t.jenis_kerja?.toLowerCase().includes('maintenance') || t.jenis_kerja?.toLowerCase().includes('odp')).length,
       color: 'from-purple-600 to-indigo-500',
       barBg: 'bg-purple-600'
     },
     {
-      label: 'Dismantling/Relokasi',
-      desc: 'Pencabutan & Pindah Jalur',
+      label: 'Dismantling',
       count: tugas.filter(t =>
         !t.jenis_kerja?.toLowerCase().includes('pasang') &&
         !t.jenis_kerja?.toLowerCase().includes('gangguan') &&
@@ -105,7 +101,7 @@ export default function AnalyticsChartsPimpinan({ tugas = [], barang = [] }) {
             <Activity className="w-4 h-4" />
           </span>
           <h2 className={`text-sm sm:text-base font-extrabold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-            Visual Analitik & Grafik Kinerja STO Payakumbuh
+            Analitik Kinerja Operasional
           </h2>
         </div>
         <span className="text-[11px] font-bold text-slate-400">
@@ -127,7 +123,7 @@ export default function AnalyticsChartsPimpinan({ tugas = [], barang = [] }) {
               <div className="flex items-center gap-2">
                 <PieChart className="w-4 h-4 text-emerald-500" />
                 <h3 className={`text-xs font-black uppercase tracking-wider ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
-                  1. Pie Chart: Status Tiket (SLA)
+                  Status Tiket & SLA
                 </h3>
               </div>
               <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
@@ -258,7 +254,7 @@ export default function AnalyticsChartsPimpinan({ tugas = [], barang = [] }) {
               <div className="flex items-center gap-2">
                 <BarChart3 className="w-4 h-4 text-blue-500" />
                 <h3 className={`text-xs font-black uppercase tracking-wider ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
-                  2. Diagram Batang: Jenis Pekerjaan
+                  Volume Pekerjaan
                 </h3>
               </div>
               <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/15 text-blue-400 border border-blue-500/30">
@@ -275,7 +271,6 @@ export default function AnalyticsChartsPimpinan({ tugas = [], barang = [] }) {
                     <div className="flex items-center justify-between text-xs">
                       <div>
                         <span className={`font-bold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{cat.label}</span>
-                        <span className="text-[10px] text-slate-400 ml-1.5 hidden sm:inline">({cat.desc})</span>
                       </div>
                       <span className="font-mono font-bold text-xs">{cat.count} Tiket</span>
                     </div>
@@ -312,7 +307,7 @@ export default function AnalyticsChartsPimpinan({ tugas = [], barang = [] }) {
               <div className="flex items-center gap-2">
                 <TrendingUp className="w-4 h-4 text-amber-500" />
                 <h3 className={`text-xs font-black uppercase tracking-wider ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
-                  3. Grafik Rasio: Logistik Gudang
+                  Ketersediaan Material
                 </h3>
               </div>
               <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30">

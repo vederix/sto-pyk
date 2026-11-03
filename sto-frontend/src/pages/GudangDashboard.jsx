@@ -391,14 +391,14 @@ export default function GudangDashboard({ defaultTab }) {
                 <span className="text-xs text-slate-400 font-mono">Petugas: {user.nama_lengkap}</span>
               </div>
               <h1 className={`text-xl sm:text-2xl font-black mt-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                {activeMenu === 'daftar-barang' && 'Daftar Stok & Master Inventaris Material Gudang STO'}
-                {activeMenu === 'output-barang' && 'Output Barang (Rilis & Serah Terima ke Teknisi)'}
-                {activeMenu === 'input-barang' && 'Input Barang (Pengadaan & Registrasi Masuk)'}
-                {activeMenu === 'laporan-detail' && 'Laporan Barang Detail & Katalog Master Stok'}
-                {activeMenu === 'cetak-surat-jalan' && 'Cetak Surat Jalan & Bukti Serah Terima Material'}
+                {activeMenu === 'daftar-barang' && 'Stok & Master Inventaris'}
+                {activeMenu === 'output-barang' && 'Output & Serah Terima Material'}
+                {activeMenu === 'input-barang' && 'Pengadaan & Registrasi Masuk'}
+                {activeMenu === 'laporan-detail' && 'Katalog & Laporan Material'}
+                {activeMenu === 'cetak-surat-jalan' && 'Cetak Surat Jalan Material'}
               </h1>
               <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'} mt-0.5`}>
-                Sistem Logistik Sentral STO Telkom Akses: Verifikasi Fisik, Rilis, dan Pemotongan Stok Otomatis.
+                Pengelolaan stok inventaris dan serah terima logistik material teknisi.
               </p>
             </div>
           </div>
@@ -407,7 +407,7 @@ export default function GudangDashboard({ defaultTab }) {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <div className={`${isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-white border-slate-200 shadow-sm'} border rounded-2xl p-4 flex items-center justify-between`}>
               <div>
-                <div className="text-[11px] text-amber-500 font-semibold uppercase">Siap Rilis (SOP 4)</div>
+                <div className="text-[11px] text-amber-500 font-semibold uppercase">Siap Rilis</div>
                 <div className="text-2xl font-extrabold text-amber-500 mt-1">{pendingReleaseCount}</div>
                 <div className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'} mt-0.5`}>Disetujui pimpinan</div>
               </div>
@@ -457,15 +457,15 @@ export default function GudangDashboard({ defaultTab }) {
             </div>
           )}
 
-          {/* TAB 2: OUTPUT BARANG (RILIS & SERAH TERIMA SOP 4) */}
+          {/* TAB 2: OUTPUT BARANG (RILIS & SERAH TERIMA) */}
           {activeMenu === 'output-barang' && (
             <div className="space-y-4 animate-in fade-in duration-200">
               <div className={`flex items-center justify-between text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                 <p>
-                  Menampilkan permohonan material yang telah disetujui Pimpinan. Klik <strong>Rilis Barang</strong> untuk melakukan serah terima fisik dan memotong stok gudang otomatis.
+                  Daftar permohonan material yang telah disetujui pimpinan dan siap untuk serah terima.
                 </p>
-                <span className="text-[10px] uppercase font-bold text-amber-500 bg-amber-500/10 px-2 py-1 rounded border border-amber-500/30">
-                  SOP Tahap 4
+                <span className="text-[10px] uppercase font-bold text-amber-500 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/30">
+                  Siap Rilis
                 </span>
               </div>
 
