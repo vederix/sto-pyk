@@ -5,7 +5,9 @@ import { useTheme } from '../context/ThemeContext';
 import {
   CheckCircle2,
   XCircle,
-  ShieldCheck
+  ShieldCheck,
+  User,
+  MapPin
 } from 'lucide-react';
 
 function ApprovalMaterial() {
@@ -128,22 +130,25 @@ function ApprovalMaterial() {
                   <div>
                     <span className="text-xs font-black text-amber-500">Permohonan #{p.id}</span>
                     <h3 className="font-bold text-sm mt-0.5">
-                      Tiket #{p.tugas_id} — {p.parentTask?.jenis_kerja || 'Pekerjaan STO'}
+                      Tiket #{p.tugas_id} &bull; {p.parentTask?.jenis_kerja || 'Pekerjaan STO'}
                     </h3>
-                    <p className={`text-[11px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                      Diajukan oleh: <strong className={isDark ? 'text-slate-200' : 'text-slate-800'}>{p.tech?.nama_lengkap || 'Teknisi Lapangan'}</strong>
-                    </p>
+                    <div className="flex items-center gap-1.5 text-xs text-slate-400 mt-1">
+                      <User className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <span className={isDark ? 'text-slate-200' : 'text-slate-800'}>{p.tech?.nama_lengkap || 'Teknisi Lapangan'}</span>
+                    </div>
                   </div>
                   <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase bg-amber-500/20 text-amber-500 border border-amber-500/30">
                     {p.status}
                   </span>
                 </div>
 
-                <div className={`p-3 rounded-xl border text-xs mb-3 space-y-1 ${
+                <div className={`p-3 rounded-xl border text-xs mb-3 space-y-1.5 ${
                   isDark ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-200'
                 }`}>
-                  <div className="text-[10px] font-bold uppercase text-slate-400">Lokasi Pekerjaan:</div>
-                  <div className="font-medium truncate">{p.parentTask?.lokasi || 'Koto Nan IV, Payakumbuh'}</div>
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                    <span className="font-medium truncate">{p.parentTask?.lokasi || 'Koto Nan IV, Payakumbuh'}</span>
+                  </div>
                   {p.catatan_teknisi && (
                     <div className="text-[11px] text-slate-400 italic pt-1 border-t border-slate-200 dark:border-slate-800">
                       "{p.catatan_teknisi}"
@@ -180,7 +185,7 @@ function ApprovalMaterial() {
                   className="flex-1 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition shadow-md shadow-emerald-950 cursor-pointer active:scale-98"
                 >
                   <CheckCircle2 className="w-4 h-4" />
-                  <span>Setujui (Approve)</span>
+                  <span>Setujui</span>
                 </button>
                 <button
                   onClick={() => handleReject(p.id)}

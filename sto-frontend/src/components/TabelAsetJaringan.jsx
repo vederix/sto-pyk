@@ -168,13 +168,12 @@ export default function TabelAsetJaringan({ onNavigateToWebGis }) {
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-600/20 text-emerald-400 border border-emerald-500/30">
               INFRASTRUKTUR JARINGAN
             </span>
-            <span className="text-xs text-slate-400 font-mono">Tabel Terpisah Supabase: <code>public.odp</code></span>
           </div>
           <h2 className={`text-xl sm:text-2xl font-black mt-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-            Master Data Titik ODP, Tiang, & ODC Wilayah Payakumbuh
+            Inventaris Aset Jaringan
           </h2>
           <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'} mt-0.5`}>
-            Daftar lengkap infrastruktur fisik jaringan fiber optic STO Payakumbuh dengan filter kapasitas port dan redaman optik.
+            Data titik ODP, tiang FO, dan ODC wilayah Payakumbuh.
           </p>
         </div>
 

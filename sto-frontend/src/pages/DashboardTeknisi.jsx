@@ -230,12 +230,7 @@ export default function DashboardTeknisi({ defaultTab }) {
                       >
                         <div className="flex items-start justify-between">
                           <div>
-                            <div className="flex items-center gap-2">
-                              <span className="font-mono text-xs font-bold text-blue-500">#{t.id}</span>
-                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                                Pool Terbuka
-                              </span>
-                            </div>
+                            <span className="font-mono text-xs font-bold text-blue-500">#{t.id}</span>
                             <h3 className={`font-extrabold text-base ${isDark ? 'text-white' : 'text-slate-900'} mt-1`}>
                               {t.pelanggan_nama}
                             </h3>
@@ -272,9 +267,9 @@ export default function DashboardTeknisi({ defaultTab }) {
                           onClick={async () => {
                             await claimTugas(t.id, user.id);
                           }}
-                          className="w-full py-3 px-4 rounded-2xl bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-xs shadow-lg shadow-blue-900/40 transition active:scale-98 cursor-pointer flex items-center justify-center gap-2"
+                          className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition active:scale-98 cursor-pointer flex items-center justify-center gap-2"
                         >
-                          <span>✋ Ambil Pekerjaan Ini (Klaim Tiket)</span>
+                          <span>Ambil Tiket</span>
                         </button>
                       </div>
                     ))}
@@ -452,7 +447,7 @@ export default function DashboardTeknisi({ defaultTab }) {
                             className="mt-2 py-1.5 px-3 rounded-xl bg-burgundy-600/20 hover:bg-burgundy-600/30 text-burgundy-400 border border-burgundy-500/30 font-bold text-[11px] flex items-center gap-1.5 transition cursor-pointer"
                           >
                             <FileText className="w-3.5 h-3.5" />
-                            <span>Lihat BASTP & Material Terpasang</span>
+                            <span>Lihat BASTP</span>
                           </button>
                         </div>
 

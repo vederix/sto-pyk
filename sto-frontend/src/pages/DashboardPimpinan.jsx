@@ -192,7 +192,6 @@ function DashboardPimpinan({ defaultTab }) {
                     </div>
                   </div>
                   <div className="text-2xl font-black mt-2">{totalTasks}</div>
-                  <div className="text-[10px] text-slate-400 mt-0.5">Semua wilayah STO</div>
                 </div>
 
                 <div className={`p-4 rounded-2xl border transition-all ${
@@ -205,20 +204,18 @@ function DashboardPimpinan({ defaultTab }) {
                     </div>
                   </div>
                   <div className="text-2xl font-black text-blue-500 mt-2">{progressTasks}</div>
-                  <div className="text-[10px] text-slate-400 mt-0.5">Teknisi aktif di lapangan</div>
                 </div>
 
                 <div className={`p-4 rounded-2xl border transition-all ${
                   isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-white border-slate-200 shadow-sm'
                 }`}>
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-bold text-emerald-500 uppercase tracking-wider">Selesai (Done)</span>
+                    <span className="text-[11px] font-bold text-emerald-500 uppercase tracking-wider">Selesai</span>
                     <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
                       <CheckCircle2 className="w-4 h-4" />
                     </div>
                   </div>
                   <div className="text-2xl font-black text-emerald-500 mt-2">{doneTasks}</div>
-                  <div className="text-[10px] text-slate-400 mt-0.5">Tervalidasi foto & BASTP</div>
                 </div>
 
                 <div className={`p-4 rounded-2xl border transition-all ${
@@ -231,7 +228,6 @@ function DashboardPimpinan({ defaultTab }) {
                     </div>
                   </div>
                   <div className="text-2xl font-black text-amber-500 mt-2">{pendingRequests}</div>
-                  <div className="text-[10px] text-slate-400 mt-0.5">Menunggu otorisasi pimpinan</div>
                 </div>
               </div>
 
@@ -304,16 +300,15 @@ function DashboardPimpinan({ defaultTab }) {
                                 {currentTask ? (
                                   <div className="mt-1 space-y-0.5">
                                     <div className={`text-[11px] ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                                      Sedang Menangani: Tiket <strong>#{currentTask.id}</strong> - {currentTask.pelanggan_nama}
+                                      Tiket <strong>#{currentTask.id}</strong> &bull; {currentTask.pelanggan_nama}
                                     </div>
                                     <div className="text-[10px] text-slate-400 truncate max-w-sm">
-                                      Lokasi: {currentTask.lokasi}
+                                      {currentTask.lokasi}
                                     </div>
                                   </div>
                                 ) : (
-                                  <div className="text-[11px] text-slate-400 italic mt-0.5 flex items-center gap-1.5">
-                                    <span>Siap menerima penugasan baru di area Payakumbuh</span>
-                                    {tech.phone && <span className="text-[10px] text-slate-500 font-mono">({tech.phone})</span>}
+                                  <div className="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1.5">
+                                    {tech.phone ? <span className="font-mono text-[10px] text-slate-500">{tech.phone}</span> : <span className="text-[10px] text-slate-500">Siap Ditugaskan</span>}
                                   </div>
                                 )}
                               </div>
@@ -327,7 +322,7 @@ function DashboardPimpinan({ defaultTab }) {
                                 title="Lihat profil dan riwayat pekerjaan teknisi ini"
                               >
                                 <User className="w-3.5 h-3.5" />
-                                <span>Detail & Riwayat</span>
+                                <span>Detail</span>
                               </button>
                             </div>
                           </div>
@@ -361,17 +356,17 @@ function DashboardPimpinan({ defaultTab }) {
 
                   <div className="space-y-3 mt-4 text-xs">
                     <div className={`p-3 rounded-2xl ${isDark ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'} border flex items-center justify-between`}>
-                      <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>Total Jenis Barang</span>
+                      <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>Total Item</span>
                       <span className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{totalBarangCount} SKU</span>
                     </div>
 
                     <div className={`p-3 rounded-2xl ${isDark ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'} border flex items-center justify-between`}>
-                      <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>Stok Kritis (≤ 20)</span>
+                      <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>Stok Kritis</span>
                       <span className="font-bold text-rose-500 dark:text-rose-400">{lowStockCount} Item</span>
                     </div>
 
                     <div className={`p-3 rounded-2xl ${isDark ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'} border flex items-center justify-between`}>
-                      <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>Permohonan Pending</span>
+                      <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>Permohonan Baru</span>
                       <span className="font-bold text-amber-500 dark:text-amber-400">{pendingRequests} Permintaan</span>
                     </div>
 
@@ -379,7 +374,7 @@ function DashboardPimpinan({ defaultTab }) {
                       onClick={() => handleTabChange('approval')}
                       className="w-full mt-2 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs transition cursor-pointer"
                     >
-                      Tinjau Approval Material Sekarang
+                      Tinjau Approval ({pendingRequests})
                     </button>
                   </div>
                 </div>

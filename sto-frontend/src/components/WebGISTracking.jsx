@@ -120,10 +120,10 @@ export default function WebGISTracking({ initialSelectedTaskId = null }) {
             <span className="p-1.5 rounded-xl bg-blue-600/20 text-blue-500 border border-blue-500/30">
               <MapPin className="w-5 h-5" />
             </span>
-            <span>WebGIS Pemetaan Infrastruktur ODP STO Telkom Payakumbuh</span>
+            <span>WebGIS Pemetaan Jaringan</span>
           </h1>
           <p className={`text-xs mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-            Pemetaan titik Optical Distribution Point (ODP), kapasitas port, redaman optik (dBm), dan sebaran tiket penugasan lapangan.
+            Pemetaan sebaran titik ODP, kapasitas port, dan penugasan lapangan.
           </p>
         </div>
 
@@ -141,27 +141,23 @@ export default function WebGISTracking({ initialSelectedTaskId = null }) {
       {/* KPI Ringkasan ODP */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className={`p-3.5 rounded-2xl border ${isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-          <div className="text-[10px] font-bold text-slate-400 uppercase">Total ODP Terdata</div>
+          <div className="text-[10px] font-bold text-slate-400 uppercase">Total ODP</div>
           <div className="text-xl font-black mt-0.5 text-blue-500">{totalOdp} Titik</div>
-          <div className="text-[10px] text-slate-400 mt-0.5">Wilayah STO Payakumbuh</div>
         </div>
 
         <div className={`p-3.5 rounded-2xl border ${isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-          <div className="text-[10px] font-bold text-emerald-500 uppercase">ODP Port Tersedia</div>
+          <div className="text-[10px] font-bold text-emerald-500 uppercase">Port Tersedia</div>
           <div className="text-xl font-black mt-0.5 text-emerald-500">{tersediaOdp} Titik</div>
-          <div className="text-[10px] text-slate-400 mt-0.5">Siap pasang baru IndiHome</div>
         </div>
 
         <div className={`p-3.5 rounded-2xl border ${isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-          <div className="text-[10px] font-bold text-rose-500 uppercase">ODP Port Penuh</div>
+          <div className="text-[10px] font-bold text-rose-500 uppercase">Port Penuh</div>
           <div className="text-xl font-black mt-0.5 text-rose-500">{penuhOdp} Titik</div>
-          <div className="text-[10px] text-slate-400 mt-0.5">Kapasitas splitter 100%</div>
         </div>
 
         <div className={`p-3.5 rounded-2xl border ${isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-          <div className="text-[10px] font-bold text-amber-500 uppercase">Perlu Maintenance</div>
+          <div className="text-[10px] font-bold text-amber-500 uppercase">Maintenance</div>
           <div className="text-xl font-black mt-0.5 text-amber-500">{maintenanceOdp} Titik</div>
-          <div className="text-[10px] text-slate-400 mt-0.5">Redaman &gt; -24 dBm</div>
         </div>
       </div>
 

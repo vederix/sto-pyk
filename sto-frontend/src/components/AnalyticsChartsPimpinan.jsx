@@ -237,10 +237,6 @@ export default function AnalyticsChartsPimpinan({ tugas = [], barang = [] }) {
               </div>
             </div>
           </div>
-
-          <p className="text-[10px] text-slate-400 mt-2 text-center pt-2 border-t border-slate-800/40">
-            Penyelesaian tepat waktu berbanding tiket aktif di wilayah Payakumbuh.
-          </p>
         </div>
 
         {/* ================================================================= */}
@@ -286,13 +282,6 @@ export default function AnalyticsChartsPimpinan({ tugas = [], barang = [] }) {
                 );
               })}
             </div>
-          </div>
-
-          <div className={`mt-3 p-2.5 rounded-2xl ${isDark ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'} border flex items-center justify-between text-[11px]`}>
-            <span className="text-slate-400">Dominasi Pekerjaan:</span>
-            <span className="font-bold text-blue-400">
-              {taskCategories.reduce((prev, current) => (prev.count > current.count) ? prev : current).label}
-            </span>
           </div>
         </div>
 
@@ -362,11 +351,6 @@ export default function AnalyticsChartsPimpinan({ tugas = [], barang = [] }) {
                 ))
               )}
             </div>
-          </div>
-
-          <div className="mt-3 pt-2 border-t border-slate-800/40 flex items-center justify-between text-[10px] text-slate-400">
-            <span>Batas Kritis: ≤ 25 Unit/Roll</span>
-            <span className="text-emerald-400 font-bold">Ambang Aman: ≥ 70 Unit</span>
           </div>
         </div>
 

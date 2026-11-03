@@ -88,10 +88,10 @@ function LaporanAudit() {
             <span className="p-1.5 rounded-xl bg-burgundy-600/20 text-burgundy-500 border border-burgundy-500/30">
               <FileText className="w-5 h-5" />
             </span>
-            <span>Riwayat & Laporan Audit Pekerjaan Lapangan</span>
+            <span>Riwayat & Laporan Audit Lapangan</span>
           </h1>
           <p className={`text-xs mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-            Rekapitulasi resmi penugasan, parameter ODP & redaman dBm, status material terpasang, dan dokumen BASTP.
+            Audit penugasan, parameter teknis ODP, dan dokumen BASTP.
           </p>
         </div>
 

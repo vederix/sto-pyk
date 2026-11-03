@@ -24,7 +24,9 @@ import {
   Download,
   FileSpreadsheet,
   Truck,
-  Check
+  Check,
+  User,
+  MapPin
 } from 'lucide-react';
 
 export default function GudangDashboard({ defaultTab }) {
@@ -409,7 +411,6 @@ export default function GudangDashboard({ defaultTab }) {
               <div>
                 <div className="text-[11px] text-amber-500 font-semibold uppercase">Siap Rilis</div>
                 <div className="text-2xl font-extrabold text-amber-500 mt-1">{pendingReleaseCount}</div>
-                <div className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'} mt-0.5`}>Disetujui pimpinan</div>
               </div>
               <div className="w-10 h-10 rounded-xl bg-amber-600/20 text-amber-500 border border-amber-500/30 flex items-center justify-center">
                 <Send className="w-5 h-5" />
@@ -420,7 +421,6 @@ export default function GudangDashboard({ defaultTab }) {
               <div>
                 <div className="text-[11px] text-emerald-500 font-semibold uppercase">Total Jenis Barang</div>
                 <div className={`text-2xl font-extrabold ${isDark ? 'text-white' : 'text-slate-900'} mt-1`}>{totalItemCount}</div>
-                <div className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'} mt-0.5`}>Katalog aktif</div>
               </div>
               <div className="w-10 h-10 rounded-xl bg-emerald-600/20 text-emerald-500 border border-emerald-500/30 flex items-center justify-center">
                 <Boxes className="w-5 h-5" />
@@ -431,7 +431,6 @@ export default function GudangDashboard({ defaultTab }) {
               <div>
                 <div className="text-[11px] text-burgundy-500 font-semibold uppercase">Stok Menipis (≤ 20)</div>
                 <div className="text-2xl font-extrabold text-burgundy-500 mt-1">{lowStockItems}</div>
-                <div className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'} mt-0.5`}>Perlu pengadaan baru</div>
               </div>
               <div className="w-10 h-10 rounded-xl bg-burgundy-600/20 text-burgundy-500 border border-burgundy-500/30 flex items-center justify-center">
                 <TrendingDown className="w-5 h-5" />
@@ -442,7 +441,6 @@ export default function GudangDashboard({ defaultTab }) {
               <div>
                 <div className="text-[11px] text-blue-500 font-semibold uppercase">Total Serah Terima</div>
                 <div className="text-2xl font-extrabold text-blue-500 mt-1">{totalReleasedCount}</div>
-                <div className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'} mt-0.5`}>Telah dirilis ke teknisi</div>
               </div>
               <div className="w-10 h-10 rounded-xl bg-blue-600/20 text-blue-500 border border-blue-500/30 flex items-center justify-center">
                 <ClipboardCheck className="w-5 h-5" />
@@ -494,10 +492,20 @@ export default function GudangDashboard({ defaultTab }) {
                         </span>
                       </div>
 
-                      <div className={`text-xs ${isDark ? 'bg-slate-950/60 border-slate-800 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-700'} p-3 rounded-2xl border space-y-1`}>
-                        <div><strong>Teknisi Pengambil:</strong> {req.tech?.nama_lengkap}</div>
-                        <div><strong>Lokasi Pekerjaan:</strong> {req.parentTask?.lokasi}</div>
-                        <div className={`text-[11px] ${isDark ? 'text-slate-400' : 'text-slate-500'} italic`}>"{req.catatan_teknisi}"</div>
+                      <div className={`text-xs ${isDark ? 'bg-slate-950/60 border-slate-800 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-700'} p-3 rounded-2xl border space-y-1.5`}>
+                        <div className="flex items-center gap-2">
+                          <User className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                          <span className="font-semibold">{req.tech?.nama_lengkap}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                          <span className="truncate">{req.parentTask?.lokasi}</span>
+                        </div>
+                        {req.catatan_teknisi && (
+                          <div className={`text-[11px] ${isDark ? 'text-slate-400' : 'text-slate-500'} italic pt-1 border-t border-slate-800/40`}>
+                            "{req.catatan_teknisi}"
+                          </div>
+                        )}
                       </div>
 
                       {/* Items to Release */}
