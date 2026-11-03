@@ -307,9 +307,9 @@ export default function ModernSidebar({ activeTab, onTabChange }) {
 
             {/* Logout Button */}
             <button
-              onClick={() => {
-                logout();
-                navigate('/login');
+              onClick={async () => {
+                await logout();
+                navigate('/login', { replace: true });
               }}
               className={`flex items-center gap-2 px-3 py-2 rounded-xl border transition cursor-pointer ${
                 isDark

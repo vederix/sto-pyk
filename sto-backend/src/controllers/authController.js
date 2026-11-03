@@ -213,3 +213,22 @@ exports.magicLogin = async (req, res) => {
     token: tokenRecord.token
   });
 };
+
+// 4. Endpoint Logout (Revokasi Sesi Server & Pembersihan Cookie)
+exports.logout = async (req, res) => {
+  const token = req.headers.authorization?.replace(/^Bearer\s+/i, '') || req.body?.token;
+  if (token) {
+    try {
+      await supabase.from('auth_tokens').update({ is_used: true }).eq('token', token);
+    } catch (err) {
+      console.warn('[Logout Token Revocation]', err.message);
+    }
+  }
+
+  // Bersihkan cookie jika ada
+  res.clearCookie('token');
+  res.clearCookie('session');
+  res.clearCookie('refreshToken');
+
+  return successResponse(res, 200, 'Logout berhasil, sesi telah dihapus dari server');
+};

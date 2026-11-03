@@ -43,7 +43,10 @@ function TasksDispatcher() {
   if (user?.role === 'gudang') {
     return <GudangDashboard defaultTab="output-barang" />;
   }
-  return <DashboardPimpinan defaultTab="kelola-tugas" />;
+  if (user?.role === 'pimpinan') {
+    return <DashboardPimpinan defaultTab="kelola-tugas" />;
+  }
+  return <Navigate to="/login" replace />;
 }
 
 function MaterialsDispatcher() {
@@ -59,7 +62,10 @@ function MaterialsDispatcher() {
   if (user?.role === 'teknisi') {
     return <DashboardTeknisi defaultTab="surat-permohonan" />;
   }
-  return <DashboardPimpinan defaultTab="laporan-gudang" />;
+  if (user?.role === 'pimpinan') {
+    return <DashboardPimpinan defaultTab="laporan-gudang" />;
+  }
+  return <Navigate to="/login" replace />;
 }
 
 function ApprovalDispatcher() {
@@ -75,7 +81,10 @@ function ApprovalDispatcher() {
   if (user?.role === 'gudang') {
     return <GudangDashboard defaultTab="output-barang" />;
   }
-  return <DashboardPimpinan defaultTab="approval" />;
+  if (user?.role === 'pimpinan') {
+    return <DashboardPimpinan defaultTab="approval" />;
+  }
+  return <Navigate to="/login" replace />;
 }
 
 function SmartCatchAll() {

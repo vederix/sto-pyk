@@ -35,7 +35,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import supabase, { isSupabaseConfigured } from '../api/supabaseClient';
-import api from '../api/axiosInstance';
+import api, { clearAuthHeaders } from '../api/axiosInstance';
 import { broadcastTicketToTelegram } from '../services/telegramBroadcast';
 import {
   initialUsers,
@@ -61,7 +61,7 @@ export function AppProvider({ children }) {
     if (saved) {
       try { return JSON.parse(saved); } catch { /* ignore */ }
     }
-    return initialUsers[0]; // Pimpinan Ir. Bambang
+    return null;
   });
 
   // 3. Database Tables
@@ -328,11 +328,40 @@ export function AppProvider({ children }) {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
     localStorage.removeItem('user');
     localStorage.removeItem('sto_currentUser');
     setCurrentUser(null);
-    setCurrentView('landing');
+    // 1. Invalidate Supabase session
+    try {
+      if (isSupabaseConfigured() && supabase?.auth) {
+        await supabase.auth.signOut();
+      }
+    } catch (err) {
+      console.warn('[Supabase SignOut Notice]', err);
+    }
+
+    // 2. Server-side session revocation
+    try {
+      await api.post('/auth/logout').catch(() => {});
+    } catch {
+      // ignore
+    }
+
+    // 3. Clear authorization headers
+    clearAuthHeaders();
+
+    localStorage.removeItem('token');
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('sto_token');
+
+    sessionStorage.removeItem('sto_redirect_after_login');
+    sessionStorage.removeItem('sto_pimpinan_tab');
+    sessionStorage.removeItem('sto_teknisi_tab');
+    sessionStorage.removeItem('sto_gudang_tab');
+    sessionStorage.removeItem('user');
+
+    setCurrentView('login');
     showToast("Anda telah keluar dari sistem.", "info");
   };
 
